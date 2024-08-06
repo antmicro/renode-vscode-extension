@@ -1,0 +1,152 @@
+{
+  "name": "renode-extension",
+  "displayName": "Renode",
+  "description": "",
+  "version": "0.0.1-alpha.1",
+  "publisher": "antmicro",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/antmicro/renode-extension",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "browser": "./dist/web.js",
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "renode.hypervisorConnect",
+        "title": "Renode: Connect to hypervisor"
+      },
+      {
+        "command": "renode.mountFolder",
+        "title": "Renode: Mount Renode Output folder"
+      },
+      {
+        "command": "renode.unmountFolder",
+        "title": "Renode: Unmount Renode Output folder"
+      },
+      {
+        "command": "renode.hypervisorDisconnect",
+        "title": "Renode: Disconnect from hypervisor"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "ada"
+      },
+      {
+        "language": "c"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "renodegdb",
+        "label": "Renode GDB",
+        "languages": [
+          "ada",
+          "c"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "elf",
+              "cwd"
+            ],
+            "properties": {
+              "elf": {
+                "type": "string"
+              },
+              "resc": {
+                "type": "string"
+              },
+              "repl": {
+                "type": "string"
+              },
+              "cwd": {
+                "type": "string"
+              },
+              "gdb": {
+                "type": "string"
+              },
+              "cpuCluster": {
+                "type": "string"
+              },
+              "pathMappings": {
+                "type": "object"
+              },
+              "terminals": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "extraRenodeArgs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "remoteHypervisor": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix && pnpm run fmt",
+    "test": "vscode-test",
+    "fmt": "prettier --write .",
+    "v:pack": "vsce pack --pre-release --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/tmp": "^0.2.6",
+    "@types/vscode": "^1.91.0",
+    "@types/ws": "^8.5.11",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "@vscode/vsce": "^2.30.0",
+    "esbuild": "^0.21.5",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
+    "eslint": "^8.57.0",
+    "isomorphic-ws": "^5.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.3.3",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@vscode/debugadapter": "^1.66.0",
+    "@vscode/debugprotocol": "^1.66.0",
+    "ws": "^8.18.0"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "arrowParens": "avoid"
+  }
+}
