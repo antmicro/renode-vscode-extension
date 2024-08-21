@@ -42,12 +42,21 @@ export class RenodeProxySession extends EventTarget {
     return state === WebSocket.OPEN;
   }
 
-  public startRenode(args: string[] = []): Promise<any> {
+  public startRenode(cwd: string): Promise<any> {
     return this.sendSessionRequest({
       action: 'spawn',
       payload: {
         name: 'renode',
-        args,
+        cwd,
+      },
+    });
+  }
+
+  public execMonitor(commands: string[]): Promise<any> {
+    return this.sendSessionRequest({
+      action: 'exec-monitor',
+      payload: {
+        commands,
       },
     });
   }

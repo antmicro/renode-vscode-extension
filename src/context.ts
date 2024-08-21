@@ -67,12 +67,18 @@ export class RenodePluginContext {
     return this.currentSession?.sessionBase;
   }
 
-  async startRenode(args: string[] = []) {
+  async startRenode(cwd: string) {
     await this.connectGuard();
 
-    await this.currentSession!.startRenode(args);
+    await this.currentSession!.startRenode(cwd);
 
     this.isDebugging = true;
+  }
+
+  async execMonitor(commands: string[]) {
+    await this.connectGuard();
+
+    await this.currentSession!.execMonitor(commands);
   }
 
   async stopRenode() {

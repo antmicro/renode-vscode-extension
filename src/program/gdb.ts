@@ -30,7 +30,7 @@ export interface LaunchRequestArguments
   gdb?: string;
   pathMappings?: object;
   terminals?: string[];
-  extraRenodeArgs?: string[];
+  extraMonitorCommands?: string[];
   cpuCluster?: string;
   // TODO: Work on autodetection
   remoteSession?: boolean;
@@ -86,7 +86,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.pluginCtx.isDebugging = true;
 
-    let renodeArgs = args.extraRenodeArgs ?? [];
+    let monitorCommands = args.extraMonitorCommands ?? [];
 
     if (args.resc) {
       let resc = args.resc;
@@ -96,7 +96,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       } else if (!path.isAbsolute(resc)) {
         resc = path.join(args.cwd, resc);
       }
-      renodeArgs = [...renodeArgs, '-e', `i @${resc}`];
+      monitorCommands = [...monitorCommands, `i @${resc}`];
     }
 
     if (args.repl) {
@@ -116,14 +116,17 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     }
 
     const gdbPort = randomPort();
-    renodeArgs = [
-      ...renodeArgs,
-      '-e',
+    monitorCommands = [
+      ...monitorCommands,
       `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
     ];
 
-    await this.pluginCtx.startRenode(renodeArgs).catch(() => {
+    await this.pluginCtx.startRenode(args.cwd).catch(() => {
       throw new Error('Renode did not start');
+    });
+
+    await this.pluginCtx.execMonitor(monitorCommands).catch(() => {
+      throw new Error('Renode did not execute initial commands');
     });
 
     this.renodeStarted = true;
