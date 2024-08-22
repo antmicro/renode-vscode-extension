@@ -34,16 +34,22 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
         ctime: 0,
         mtime: 0,
         size: 1,
+        permissions: vscode.FilePermission.Readonly,
       };
     }
 
-    const res = await this.pluginCtx.statFile(uri.path);
-    return {
-      ...res,
-      type:
-        (res.isfile ? vscode.FileType.File : vscode.FileType.Directory) |
-        (res.islink ? vscode.FileType.SymbolicLink : 0),
-    };
+    try {
+      const res = await this.pluginCtx.statFile(uri.path);
+      return {
+        ...res,
+        type:
+          (res.isfile ? vscode.FileType.File : vscode.FileType.Directory) |
+          (res.islink ? vscode.FileType.SymbolicLink : 0),
+        permissions: vscode.FilePermission.Readonly,
+      };
+    } catch {
+      throw vscode.FileSystemError.FileNotFound(uri);
+    }
   }
 
   async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {

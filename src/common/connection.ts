@@ -94,7 +94,7 @@ export class RenodeHypervisorSession extends EventTarget {
 
   public statFile(path: string): Promise<any> {
     return this.sendHypervisorRequest({
-      action: 'fs/upld',
+      action: 'fs/stat',
       payload: {
         args: [path],
       },
