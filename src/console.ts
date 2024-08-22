@@ -32,19 +32,19 @@ export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
 
     this.ws = new WebSocket(address);
 
-    this.ws.on('open', () => {
+    this.ws.addEventListener('open', () => {
       this.isActive = true;
       this.changeNameEmitter.fire(this.name);
     });
 
-    this.ws.on('close', (code, reason) => {
+    this.ws.addEventListener('close', () => {
       this.isActive = false;
       this.changeNameEmitter.fire('connection lost');
       this.closeEmitter.fire();
     });
 
-    this.ws.on('message', (data, isBinary) => {
-      this.writeEmitter.fire(data.toString());
+    this.ws.addEventListener('message', ev => {
+      this.writeEmitter.fire(ev.data.toString());
     });
   }
 

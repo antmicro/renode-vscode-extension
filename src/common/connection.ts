@@ -29,7 +29,7 @@ export class RenodeHypervisorSession extends EventTarget {
   ) {
     super();
     this.sessionSocket.addEventListener('message', ev =>
-      this.onData(ev.data as string),
+      this.onData(ev.data.toString()),
     );
     this.sessionSocket.addEventListener('error', () => this.onError());
     this.sessionSocket.addEventListener('close', () => this.onClose());
