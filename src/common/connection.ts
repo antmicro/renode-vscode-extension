@@ -15,6 +15,7 @@ class SocketClosedEvent extends Event {
 
 export class RenodeHypervisorSession extends EventTarget {
   private pendingRequest?: PendingRequest;
+  private requestQueue: EmptyCallback[] = [];
 
   public static async tryConnect(wsUri: string) {
     const uri = new URL('/proxy', wsUri);
@@ -119,7 +120,9 @@ export class RenodeHypervisorSession extends EventTarget {
   // Must be called before making any request.
   private async waitForCurrentRequest() {
     if (this.pendingRequest) {
-      await this.pendingRequest.waitForFinish();
+      return new Promise<void>(resolve => {
+        this.requestQueue.push(() => resolve());
+      });
     }
   }
 
@@ -135,6 +138,7 @@ export class RenodeHypervisorSession extends EventTarget {
     if (this.socketReady) {
       const res = await this.sendInner(JSON.stringify(msg));
       const obj: any = tryJsonParse(res);
+      console.log('[DEBUG] got answer from session', obj);
 
       if (!obj?.status || obj.status !== 'success') {
         throw new Error(obj.error);
@@ -149,14 +153,21 @@ export class RenodeHypervisorSession extends EventTarget {
   private sendInner(msg: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       await this.waitForCurrentRequest();
+      console.log('[DEBUG] sending message to session', msg);
 
       if (this.sessionSocket) {
-        this.pendingRequest = new PendingRequest((res, err) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(res);
-        });
+        this.pendingRequest = new PendingRequest(
+          (res, err) => {
+            if (err) {
+              return reject(err);
+            }
+            resolve(res);
+          },
+          () => {
+            const nextReq = this.requestQueue.shift();
+            nextReq?.();
+          },
+        );
         this.sessionSocket.send(msg);
       } else {
         reject(new Error('Not connected'));
@@ -165,30 +176,22 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 }
 
+type EmptyCallback = () => void;
 type RequestCallback = (response: any, error?: any) => void;
 
 class PendingRequest {
-  private callbacks: RequestCallback[] = [];
-
-  constructor(cb: RequestCallback) {
-    this.callbacks.push(cb);
-  }
-
-  async waitForFinish() {
-    return new Promise<void>(resolve => {
-      this.callbacks.push(() => resolve());
-    });
-  }
+  constructor(
+    private callback: RequestCallback,
+    private endCallback?: EmptyCallback,
+  ) {}
 
   _onData(data: any) {
-    for (const cb of this.callbacks) {
-      cb(data);
-    }
+    this.callback(data);
+    this.endCallback?.();
   }
 
   _onError(err: any) {
-    for (const cb of this.callbacks) {
-      cb(undefined, err);
-    }
+    this.callback(undefined, err);
+    this.endCallback?.();
   }
 }
