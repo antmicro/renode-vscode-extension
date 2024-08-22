@@ -64,7 +64,7 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
 
   async readFile(uri: vscode.Uri): Promise<Uint8Array> {
     console.log('[!!!] got fs event: readFile', arguments);
-    return Buffer.from('hello world');
+    return this.pluginCtx.downloadFile(uri.path);
   }
 
   async writeFile(

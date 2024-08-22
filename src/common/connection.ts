@@ -63,6 +63,16 @@ export class RenodeHypervisorSession extends EventTarget {
     });
   }
 
+  public async downloadFile(path: string): Promise<Uint8Array> {
+    const encoded = await this.sendHypervisorRequest({
+      action: 'fs/dwnl',
+      payload: {
+        args: [path],
+      },
+    });
+    return Buffer.from(encoded, 'base64');
+  }
+
   public sendFile(path: string, contents: Uint8Array): Promise<any> {
     const parsed = parsePath(path);
     const buf = Buffer.from(contents);

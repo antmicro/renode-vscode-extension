@@ -75,6 +75,12 @@ export class RenodePluginContext {
     this.isDebugging = false;
   }
 
+  async downloadFile(path: string): Promise<Uint8Array> {
+    await this.connectGuard();
+
+    return this.currentSession!.downloadFile(path);
+  }
+
   async sendFile(path: string): Promise<any> {
     await this.connectGuard();
 
