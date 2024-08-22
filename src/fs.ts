@@ -23,8 +23,7 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
       readonly excludes: readonly string[];
     },
   ): vscode.Disposable {
-    console.log('[!!!] got fs event: watch', arguments);
-    throw new Error('Method not implemented.');
+    return new vscode.Disposable(() => {});
   }
 
   async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
