@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import vscode from 'vscode';
-import { Buffer } from 'buffer';
 import { RenodePluginContext } from './context';
 
 export class RenodeFsProvider implements vscode.FileSystemProvider {
@@ -17,8 +16,8 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   }
 
   watch(
-    uri: vscode.Uri,
-    options: {
+    _uri: vscode.Uri,
+    _options: {
       readonly recursive: boolean;
       readonly excludes: readonly string[];
     },
@@ -75,10 +74,10 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   async writeFile(
     uri: vscode.Uri,
     content: Uint8Array,
-    options: { readonly create: boolean; readonly overwrite: boolean },
+    _options: { readonly create: boolean; readonly overwrite: boolean },
   ): Promise<void> {
     console.log('[!!!] got fs event: writeFile', arguments);
-    throw new Error('Method not implemented.');
+    return this.pluginCtx.sendFileFromContent(uri.path, content);
   }
 
   async delete(

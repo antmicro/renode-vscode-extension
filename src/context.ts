@@ -81,12 +81,17 @@ export class RenodePluginContext {
     return this.currentSession!.downloadFile(path);
   }
 
-  async sendFile(path: string): Promise<any> {
+  async sendFileFromContent(path: string, content: Uint8Array): Promise<any> {
     await this.connectGuard();
 
+    return this.currentSession!.sendFile(path, content);
+  }
+
+  async sendFileFromPath(path: string): Promise<any> {
     const uri = vscode.Uri.file(path);
     const data = await vscode.workspace.fs.readFile(uri);
-    return this.currentSession!.sendFile(path, data);
+
+    return this.sendFileFromContent(path, data);
   }
 
   async listFiles(): Promise<any[]> {

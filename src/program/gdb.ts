@@ -91,7 +91,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     if (args.resc) {
       let resc = args.resc;
       if (isRemote) {
-        const resp = await this.pluginCtx.sendFile(args.resc);
+        const resp = await this.pluginCtx.sendFileFromPath(args.resc);
         resc = resp.path;
       } else if (!path.isAbsolute(resc)) {
         resc = path.join(args.cwd, resc);
@@ -102,14 +102,14 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     if (args.repl) {
       let repl = args.repl;
       if (isRemote) {
-        const resp = await this.pluginCtx.sendFile(args.repl);
+        const resp = await this.pluginCtx.sendFileFromPath(args.repl);
         repl = resp.path;
       }
     }
 
     let elf = args.elf;
     if (isRemote) {
-      const resp = await this.pluginCtx.sendFile(args.elf);
+      const resp = await this.pluginCtx.sendFileFromPath(args.elf);
       elf = resp.path;
     } else if (!path.isAbsolute(elf)) {
       elf = path.join(args.cwd, elf);
