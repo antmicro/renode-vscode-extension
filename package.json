@@ -6,6 +6,10 @@
   "publisher": "antmicro",
   "license": "Apache-2.0",
   "homepage": "https://github.com/antmicro/renode-extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antmicro/renode-vscode-extension.git"
+  },
   "engines": {
     "vscode": "^1.91.0"
   },
