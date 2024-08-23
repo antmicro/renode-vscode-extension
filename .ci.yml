@@ -1,0 +1,32 @@
+stages:
+  - build
+
+.common: &common
+  image: 'node:20.17.0-bookworm'
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "main"
+      - $CI_PIPELINE_SOURCE == "merge_request"
+  before_script:
+    - npm install -g pnpm
+    - pnpm config set store-dir ~/.pnpm-store
+
+build:
+  stage: build
+  <<: *common
+  artifacts:
+    paths:
+      - artifacts/
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm v:pack
+    - mkdir -p artifacts
+    - mv *.vsix artifacts/
+    - mv dist artifacts/
+
+lint:
+  stage: build
+  <<: *common
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm lint
