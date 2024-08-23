@@ -116,10 +116,11 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src --ext ts && pnpm run fmt:check",
     "lint:fix": "eslint src --ext ts --fix && pnpm run fmt",
     "test": "vscode-test",
     "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
     "v:pack": "vsce pack --pre-release --no-dependencies"
   },
   "devDependencies": {
