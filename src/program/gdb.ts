@@ -106,6 +106,14 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       }
     }
 
+    let elf = args.elf;
+    if (isRemote) {
+      const resp = await this.pluginCtx.sendFile(args.elf);
+      elf = resp.path;
+    } else if (!path.isAbsolute(elf)) {
+      elf = path.join(args.cwd, elf);
+    }
+
     const gdbPort = randomPort();
     renodeArgs = [
       ...renodeArgs,
@@ -131,14 +139,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       `/run/${args.gdb ?? 'gdb'}`,
       this.pluginCtx.sessionBase,
     );
-
-    let elf = args.elf;
-    if (isRemote) {
-      const resp = await this.pluginCtx.sendFile(args.elf);
-      elf = resp.path;
-    } else if (!path.isAbsolute(elf)) {
-      elf = path.join(args.cwd, elf);
-    }
 
     await this.miDebugger
       .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString())
