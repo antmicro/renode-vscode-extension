@@ -101,6 +101,29 @@ export class RenodeHypervisorSession extends EventTarget {
     });
   }
 
+  public removeFile(path: string): Promise<any> {
+    return this.sendHypervisorRequest({
+      action: 'fs/remove',
+      payload: {
+        args: [path],
+      },
+    });
+  }
+
+  public moveFile(from: string, to: string): Promise<any> {
+    return this.sendHypervisorRequest({
+      action: 'fs/move',
+      payload: { args: [from, to] },
+    });
+  }
+
+  public copyFile(from: string, to: string): Promise<any> {
+    return this.sendHypervisorRequest({
+      action: 'fs/copy',
+      payload: { args: [from, to] },
+    });
+  }
+
   public dispose() {
     this.sessionSocket.close();
   }

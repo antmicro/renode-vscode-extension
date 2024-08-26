@@ -94,6 +94,24 @@ export class RenodePluginContext {
     return this.sendFileFromContent(path, data);
   }
 
+  async removeFile(path: string): Promise<any> {
+    await this.connectGuard();
+
+    return this.currentSession!.removeFile(path);
+  }
+
+  async moveFile(from: string, to: string): Promise<any> {
+    await this.connectGuard();
+
+    return this.currentSession!.moveFile(from, to);
+  }
+
+  async copyFile(from: string, to: string): Promise<any> {
+    await this.connectGuard();
+
+    return this.currentSession!.copyFile(from, to);
+  }
+
   async listFiles(): Promise<any[]> {
     await this.connectGuard();
 

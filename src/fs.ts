@@ -84,8 +84,7 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
     uri: vscode.Uri,
     options: { readonly recursive: boolean },
   ): Promise<void> {
-    console.log('[!!!] got fs event: delete', arguments);
-    throw new Error('Method not implemented.');
+    return this.pluginCtx.removeFile(uri.path);
   }
 
   async rename(
@@ -93,8 +92,7 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
     newUri: vscode.Uri,
     options: { readonly overwrite: boolean },
   ): Promise<void> {
-    console.log('[!!!] got fs event: rename', arguments);
-    throw new Error('Method not implemented.');
+    return this.pluginCtx.moveFile(oldUri.path, newUri.path);
   }
 
   async copy(
@@ -102,7 +100,6 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
     destination: vscode.Uri,
     options: { readonly overwrite: boolean },
   ): Promise<void> {
-    console.log('[!!!] got fs event: copy', arguments);
-    throw new Error('Method not implemented.');
+    return this.pluginCtx.copyFile(source.path, destination.path);
   }
 }
