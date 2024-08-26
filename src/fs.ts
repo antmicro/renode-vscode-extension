@@ -26,7 +26,6 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   }
 
   async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
-    console.log('[!!!] got fs event: stat', arguments);
     if (uri.path === '/') {
       return {
         type: vscode.FileType.Directory,
@@ -52,7 +51,6 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   }
 
   async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-    console.log('[!!!] got fs event: readDirectory', arguments);
     const files = await this.pluginCtx.listFiles();
     return files.map(file => [
       file.name,
@@ -76,7 +74,6 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
     content: Uint8Array,
     _options: { readonly create: boolean; readonly overwrite: boolean },
   ): Promise<void> {
-    console.log('[!!!] got fs event: writeFile', arguments);
     return this.pluginCtx.sendFileFromContent(uri.path, content);
   }
 
