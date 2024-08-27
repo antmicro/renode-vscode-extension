@@ -61,6 +61,16 @@ export class RenodeProxySession extends EventTarget {
     });
   }
 
+  public getUarts(machine: string): Promise<string[]> {
+    return this.sendSessionRequest({
+      action: 'exec-renode',
+      payload: {
+        command: 'uarts',
+        args: { machine },
+      },
+    });
+  }
+
   public getMachines(): Promise<string[]> {
     return this.sendSessionRequest({
       action: 'exec-renode',

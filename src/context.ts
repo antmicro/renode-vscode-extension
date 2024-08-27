@@ -81,6 +81,12 @@ export class RenodePluginContext {
     await this.currentSession!.execMonitor(commands);
   }
 
+  async getUarts(machine: string): Promise<string[]> {
+    await this.connectGuard();
+
+    return this.currentSession!.getUarts(machine);
+  }
+
   async getMachines(): Promise<string[]> {
     await this.connectGuard();
 
