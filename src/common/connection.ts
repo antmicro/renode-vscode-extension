@@ -17,7 +17,7 @@ export class RenodeHypervisorSession extends EventTarget {
   private pendingRequest?: PendingRequest;
 
   public static async tryConnect(wsUri: string) {
-    const uri = new URL('/hypervisor', wsUri);
+    const uri = new URL('/proxy', wsUri);
     const socket = await tryConnectWs(uri.toString());
     return new RenodeHypervisorSession(socket, wsUri);
   }
