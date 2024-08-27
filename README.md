@@ -36,27 +36,26 @@ Here is the sample configuration file you can place in `.vscode/launch.json` or 
 
 ```json
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "renodegdb",
-            "request": "launch",
-            "name": "Debug in Renode",
-            "elf": "${workspaceFolder}/path/to/your/binary.elf"
-            "gdb": "gdb-multiarch", /* provide the binary for GDB you would like to use */
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "renodegdb",
+      "request": "launch",
+      "name": "Debug in Renode",
+      "elf": "${workspaceFolder}/path/to/your/binary.elf",
+      "gdb": "gdb-multiarch" /* provide the binary for GDB you would like to use */,
 
-            "resc": "${workspaceFolder}/your.resc",
+      "resc": "${workspaceFolder}/your.resc",
 
-            "cwd": "${workspaceFolder}",
-            "terminals": [
-                "ws://127.0.0.1:21234/telnet/29170", // Monitor
-                "ws://127.0.0.1:21234/telnet/29171", // Log
-                "ws://127.0.0.1:21234/telnet/29172"  // UART
-            ],
-        }
-    ]
+      "cwd": "${workspaceFolder}",
+      "terminals": [
+        "ws://127.0.0.1:21234/telnet/29170", // Monitor
+        "ws://127.0.0.1:21234/telnet/29171", // Log
+        "ws://127.0.0.1:21234/telnet/29172" // UART
+      ]
+    }
+  ]
 }
-
 ```
 
 Please be advised that the `terminals` node is expected not to be needed in future.
