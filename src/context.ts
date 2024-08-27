@@ -129,7 +129,7 @@ export class RenodePluginContext {
   private async connectCommandHandler() {
     const wsUri = await vscode.window.showInputBox({
       title: 'Session URI',
-      value: 'ws://127.0.0.1:6000',
+      value: 'ws://127.0.0.1:21234',
       prompt: 'Enter base URI, not the hypervisor subpath',
     });
 
