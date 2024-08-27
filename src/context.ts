@@ -81,6 +81,12 @@ export class RenodePluginContext {
     await this.currentSession!.execMonitor(commands);
   }
 
+  async getMachines(): Promise<string[]> {
+    await this.connectGuard();
+
+    return this.currentSession!.getMachines();
+  }
+
   async stopRenode() {
     // Stopping renode does not require a connection to a session.
     // If we're not connected that means we have lost the connection,

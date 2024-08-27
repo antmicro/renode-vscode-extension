@@ -61,6 +61,15 @@ export class RenodeProxySession extends EventTarget {
     });
   }
 
+  public getMachines(): Promise<string[]> {
+    return this.sendSessionRequest({
+      action: 'exec-renode',
+      payload: {
+        command: 'machines',
+      },
+    });
+  }
+
   public stopRenode(): Promise<any> {
     return this.sendSessionRequest({
       action: 'kill',
