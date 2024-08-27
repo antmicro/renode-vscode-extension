@@ -62,6 +62,14 @@
       {
         "command": "renode.sessionDisconnect",
         "title": "Renode: Disconnect from session"
+      },
+      {
+        "command": "renode.openUartConsole",
+        "title": "Renode: Open UART console"
+      },
+      {
+        "command": "renode.openLogs",
+        "title": "Renode: Open Logs"
       }
     ],
     "breakpoints": [

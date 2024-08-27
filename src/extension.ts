@@ -4,6 +4,7 @@
 
 import * as vscode from 'vscode';
 import { RenodeGdbDebugSession } from './program/gdb';
+import { registerConsoleCommands } from './program/consoleCommand';
 import { RenodePluginContext } from './context';
 
 let ctx: RenodePluginContext;
@@ -12,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Renode extension loaded');
 
   ctx = new RenodePluginContext(context.subscriptions);
+  registerConsoleCommands(context.subscriptions, ctx);
 
   const adapterDisposable = vscode.debug.registerDebugAdapterDescriptorFactory(
     'renodegdb',

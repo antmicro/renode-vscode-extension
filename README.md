@@ -57,5 +57,3 @@ Here is the sample configuration file you can place in `.vscode/launch.json` or 
   ]
 }
 ```
-
-Please be advised that the `terminals` node is expected not to be needed in future.
