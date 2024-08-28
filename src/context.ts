@@ -67,6 +67,10 @@ export class RenodePluginContext {
     return this.currentSession?.sessionBase;
   }
 
+  get socketReady(): boolean {
+    return this.currentSession?.socketReady ?? false;
+  }
+
   async startRenode(cwd: string) {
     await this.connectGuard();
 
@@ -185,10 +189,6 @@ export class RenodePluginContext {
       this.status.command = this.connectCommand;
     }
     this.status.show();
-  }
-
-  private get socketReady(): boolean {
-    return this.currentSession?.socketReady ?? false;
   }
 
   // *** Command handlers ***
