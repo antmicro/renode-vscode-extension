@@ -5,6 +5,17 @@
 import * as vscode from 'vscode';
 import WebSocket from 'isomorphic-ws';
 
+export function createRenodeWebSocketTerminal(
+  name: string,
+  wsUri: string,
+  readonly?: boolean,
+): vscode.Terminal {
+  return vscode.window.createTerminal({
+    name,
+    pty: new RenodeWebSocketPseudoTerminal(name, wsUri, readonly),
+  });
+}
+
 export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
   onDidChangeName?: vscode.Event<string> | undefined;
   onDidClose?: vscode.Event<number | void> | undefined;
