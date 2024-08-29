@@ -9,14 +9,19 @@ import { RenodeHypervisorSession } from './common/connection';
 export class RenodePluginContext {
   // TODO: Remove once more than one debugging session is supported.
   public isDebugging = false;
+  public onPreDisconnect: vscode.Event<RenodePluginContext>;
 
   private currentSession?: RenodeHypervisorSession;
   private status: vscode.StatusBarItem;
+  private preDisconnectEmitter: vscode.EventEmitter<RenodePluginContext>;
 
   private connectCommand = 'renode.hypervisorConnect';
   private disconnectCommand = 'renode.hypervisorDisconnect';
 
   constructor(subscriptions: any[]) {
+    this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
+    this.onPreDisconnect = this.preDisconnectEmitter.event;
+
     const connectCommand = vscode.commands.registerCommand(
       this.connectCommand,
       this.connectCommandHandler.bind(this),
@@ -120,6 +125,7 @@ export class RenodePluginContext {
   // *** Command handlers ***
 
   private disconnectCommandHandler() {
+    this.preDisconnectEmitter?.fire(this);
     this.currentSession?.dispose();
     this.currentSession = undefined;
 
