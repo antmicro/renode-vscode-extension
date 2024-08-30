@@ -43,7 +43,6 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
         type:
           (res.isfile ? vscode.FileType.File : vscode.FileType.Directory) |
           (res.islink ? vscode.FileType.SymbolicLink : 0),
-        permissions: vscode.FilePermission.Readonly,
       };
     } catch {
       throw vscode.FileSystemError.FileNotFound(uri);

@@ -43,9 +43,6 @@ export class RenodePluginContext {
     const fsRegistration = vscode.workspace.registerFileSystemProvider(
       'renodehyp',
       new RenodeFsProvider(this),
-      {
-        isReadonly: true,
-      },
     );
     subscriptions.push(fsRegistration);
 
