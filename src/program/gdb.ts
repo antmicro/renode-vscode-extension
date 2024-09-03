@@ -44,6 +44,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
   constructor(private pluginCtx: RenodePluginContext) {
     super(false, false);
+    pluginCtx.onPreDisconnect(() => this.disconnect());
   }
 
   protected override initializeRequest(
@@ -182,26 +183,8 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments,
   ): Promise<void> {
-    for (const terminal of this.terminals) {
-      terminal.dispose();
-    }
-    this.output?.dispose();
-
-    this.miDebugger?.detach();
-
-    if (this.renodeStarted) {
-      await this.pluginCtx
-        .stopRenode()
-        .then(() => {
-          vscode.window.showInformationMessage('Renode stopped');
-        })
-        .catch(() => {
-          vscode.window.showErrorMessage('Renode did not stop');
-        });
-    }
+    await this.disconnect();
     this.sendResponse(response);
-    this.renodeStarted = false;
-    this.pluginCtx.isDebugging = false;
   }
 
   protected override async disassembleRequest(
@@ -271,5 +254,27 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
   override sendResponse(response: DebugProtocol.Response): void {
     super.sendResponse(response);
+  }
+
+  private async disconnect(): Promise<void> {
+    for (const terminal of this.terminals) {
+      terminal.dispose();
+    }
+    this.output?.dispose();
+
+    this.miDebugger?.detach();
+
+    if (this.renodeStarted) {
+      await this.pluginCtx
+        .stopRenode()
+        .then(() => {
+          vscode.window.showInformationMessage('Renode stopped');
+        })
+        .catch(() => {
+          vscode.window.showErrorMessage('Renode did not stop');
+        });
+    }
+    this.renodeStarted = false;
+    this.pluginCtx.isDebugging = false;
   }
 }
