@@ -31,10 +31,10 @@
           "default": "ws://127.0.0.1:21234",
           "description": "Default base Uri for ws-proxy session"
         },
-        "renode.downloadZip": {
+        "renode.workspace": {
           "type": "string",
-          "default": "input",
-          "description": "ZIP file URL to download"
+          "default": "workspace",
+          "description": "subdirectory this instance will connect to"
         }
       }
     },

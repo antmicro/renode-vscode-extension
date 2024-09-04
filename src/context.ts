@@ -198,7 +198,12 @@ export class RenodePluginContext {
 
   private async connectCommandHandler(wsUri: string = this.defaultSessionBase) {
     this.disconnectCommandHandler();
-    this.currentSession = await RenodeProxySession.tryConnect(wsUri);
+    const cfg = vscode.workspace.getConfiguration('renode');
+    const workspace = cfg?.get<string>('workspace');
+    this.currentSession = await RenodeProxySession.tryConnect(
+      wsUri,
+      workspace ?? '',
+    );
     this.currentSession.addEventListener('close', () => this.onClose());
 
     this.updateStatus();
