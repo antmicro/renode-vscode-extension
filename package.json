@@ -30,6 +30,11 @@
           "type": "string",
           "default": "ws://127.0.0.1:21234",
           "description": "Default base Uri for ws-proxy session"
+        },
+        "renode.downloadZip": {
+          "type": "string",
+          "default": "input",
+          "description": "ZIP file URL to download"
         }
       }
     },
@@ -53,6 +58,10 @@
       {
         "command": "renode.sessionDisconnect",
         "title": "Renode: Disconnect from session"
+      },
+      {
+        "command": "renode.downloadZip",
+        "title": "Renode: Download ZIP"
       }
     ],
     "breakpoints": [

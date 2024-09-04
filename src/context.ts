@@ -86,6 +86,12 @@ export class RenodePluginContext {
     this.isDebugging = false;
   }
 
+  async downloadZipToFs(zipUrl: string) {
+    await this.connectGuard();
+
+    this.currentSession!.downloadZipToFs(zipUrl);
+  }
+
   async downloadFile(path: string): Promise<Uint8Array> {
     await this.connectGuard();
 

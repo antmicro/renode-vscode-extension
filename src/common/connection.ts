@@ -63,6 +63,15 @@ export class RenodeProxySession extends EventTarget {
     });
   }
 
+  public async downloadZipToFs(zipUrl: string) {
+    this.sendSessionRequest({
+      action: 'fs/zip',
+      payload: {
+        args: [zipUrl],
+      },
+    });
+  }
+
   public async downloadFile(path: string): Promise<Uint8Array> {
     const encoded = await this.sendSessionRequest({
       action: 'fs/dwnl',
