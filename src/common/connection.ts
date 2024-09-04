@@ -86,9 +86,12 @@ export class RenodeHypervisorSession extends EventTarget {
     });
   }
 
-  public async listFiles(): Promise<any[]> {
+  public async listFiles(path: string): Promise<any[]> {
     return this.sendHypervisorRequest({
       action: 'fs/list',
+      payload: {
+        args: [path],
+      },
     });
   }
 

@@ -50,7 +50,7 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   }
 
   async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-    const files = await this.pluginCtx.listFiles();
+    const files = await this.pluginCtx.listFiles(uri.path);
     return files.map(file => [
       file.name,
       (file.isfile ? vscode.FileType.File : vscode.FileType.Directory) |

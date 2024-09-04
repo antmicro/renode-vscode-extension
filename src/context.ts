@@ -109,10 +109,10 @@ export class RenodePluginContext {
     return this.currentSession!.copyFile(from, to);
   }
 
-  async listFiles(): Promise<any[]> {
+  async listFiles(path: string): Promise<any[]> {
     await this.connectGuard();
 
-    return this.currentSession!.listFiles();
+    return this.currentSession!.listFiles(path);
   }
 
   async statFile(path: string): Promise<any> {
