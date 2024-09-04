@@ -33,7 +33,7 @@ export interface LaunchRequestArguments
   extraRenodeArgs?: string[];
   cpuCluster?: string;
   // TODO: Work on autodetection
-  remoteHypervisor?: boolean;
+  remoteSession?: boolean;
 }
 
 export class RenodeGdbDebugSession extends MI2DebugSession {
@@ -82,7 +82,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       throw new Error('Only one debugging session is supported');
     }
 
-    const isRemote = args.remoteHypervisor ?? false;
+    const isRemote = args.remoteSession ?? false;
 
     this.pluginCtx.isDebugging = true;
 

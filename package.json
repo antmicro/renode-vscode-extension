@@ -35,8 +35,8 @@
     },
     "commands": [
       {
-        "command": "renode.hypervisorConnect",
-        "title": "Renode: Connect to hypervisor"
+        "command": "renode.sessionConnect",
+        "title": "Renode: Connect to session"
       },
       {
         "command": "renode.advancedSessionConnect",
@@ -51,8 +51,8 @@
         "title": "Renode: Unmount Renode Output folder"
       },
       {
-        "command": "renode.hypervisorDisconnect",
-        "title": "Renode: Disconnect from hypervisor"
+        "command": "renode.sessionDisconnect",
+        "title": "Renode: Disconnect from session"
       }
     ],
     "breakpoints": [
@@ -111,7 +111,7 @@
                   "type": "string"
                 }
               },
-              "remoteHypervisor": {
+              "remoteSession": {
                 "type": "boolean"
               }
             }

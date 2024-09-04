@@ -4,7 +4,7 @@
 
 import * as vscode from 'vscode';
 import { RenodeFsProvider } from './fs';
-import { RenodeHypervisorSession } from './common/connection';
+import { RenodeProxySession } from './common/connection';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';
 
@@ -13,13 +13,13 @@ export class RenodePluginContext {
   public isDebugging = false;
   public onPreDisconnect: vscode.Event<RenodePluginContext>;
 
-  private currentSession?: RenodeHypervisorSession;
+  private currentSession?: RenodeProxySession;
   private status: vscode.StatusBarItem;
   private preDisconnectEmitter: vscode.EventEmitter<RenodePluginContext>;
 
   private advancedConnectCommand = 'renode.advancedSessionConnect';
-  private connectCommand = 'renode.hypervisorConnect';
-  private disconnectCommand = 'renode.hypervisorDisconnect';
+  private connectCommand = 'renode.sessionConnect';
+  private disconnectCommand = 'renode.sessionDisconnect';
 
   constructor(subscriptions: any[]) {
     this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
@@ -142,14 +142,13 @@ export class RenodePluginContext {
 
   private updateStatus() {
     if (this.socketReady) {
-      this.status.text = '$(pass-filled) Renode Hypervisor Connected';
+      this.status.text = '$(pass-filled) Renode Session Connected';
       this.status.backgroundColor = new vscode.ThemeColor(
         'statusBarItem.warningBackground',
       );
       this.status.command = this.disconnectCommand;
     } else {
-      this.status.text =
-        '$(circle-large-outline) Renode Hypervisor Not Connected';
+      this.status.text = '$(circle-large-outline) Renode Session Not Connected';
       this.status.backgroundColor = new vscode.ThemeColor(
         'statusBarItem.background',
       );
@@ -210,7 +209,7 @@ export class RenodePluginContext {
     }
 
     if (!this.socketReady) {
-      throw new Error('Could not connect to Renode Hypervisor');
+      throw new Error('Could not connect to Renode Session');
     }
   }
 }

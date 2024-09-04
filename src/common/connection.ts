@@ -13,14 +13,14 @@ class SocketClosedEvent extends Event {
   }
 }
 
-export class RenodeHypervisorSession extends EventTarget {
+export class RenodeProxySession extends EventTarget {
   private pendingRequest?: PendingRequest;
   private requestQueue: EmptyCallback[] = [];
 
   public static async tryConnect(wsUri: string) {
     const uri = new URL('/proxy', wsUri);
     const socket = await tryConnectWs(uri.toString());
-    return new RenodeHypervisorSession(socket, wsUri);
+    return new RenodeProxySession(socket, wsUri);
   }
 
   private constructor(
@@ -45,7 +45,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public startRenode(args: string[] = []): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'spawn',
       payload: {
         name: 'renode',
@@ -55,7 +55,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public stopRenode(): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'kill',
       payload: {
         name: 'renode',
@@ -64,7 +64,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public async downloadFile(path: string): Promise<Uint8Array> {
-    const encoded = await this.sendHypervisorRequest({
+    const encoded = await this.sendSessionRequest({
       action: 'fs/dwnl',
       payload: {
         args: [path],
@@ -77,7 +77,7 @@ export class RenodeHypervisorSession extends EventTarget {
     const parsed = parsePath(path);
     const buf = Buffer.from(contents);
     const enc = buf.toString('base64');
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/upld',
       payload: {
         args: [parsed.base],
@@ -87,7 +87,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public async listFiles(path: string): Promise<any[]> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/list',
       payload: {
         args: [path],
@@ -96,7 +96,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public statFile(path: string): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/stat',
       payload: {
         args: [path],
@@ -105,7 +105,7 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public removeFile(path: string): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/remove',
       payload: {
         args: [path],
@@ -114,14 +114,14 @@ export class RenodeHypervisorSession extends EventTarget {
   }
 
   public moveFile(from: string, to: string): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/move',
       payload: { args: [from, to] },
     });
   }
 
   public copyFile(from: string, to: string): Promise<any> {
-    return this.sendHypervisorRequest({
+    return this.sendSessionRequest({
       action: 'fs/copy',
       payload: { args: [from, to] },
     });
@@ -162,7 +162,7 @@ export class RenodeHypervisorSession extends EventTarget {
     }
   }
 
-  private async sendHypervisorRequest(req: {
+  private async sendSessionRequest(req: {
     action: string;
     payload?: { [key: string]: any };
   }): Promise<any> {
