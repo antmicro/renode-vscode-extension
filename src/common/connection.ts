@@ -82,14 +82,22 @@ export class RenodeProxySession extends EventTarget {
     return Buffer.from(encoded, 'base64');
   }
 
+  public createDirectory(path: string): Promise<void> {
+    return this.sendSessionRequest({
+      action: 'fs/mkdir',
+      payload: {
+        args: [path],
+      },
+    });
+  }
+
   public sendFile(path: string, contents: Uint8Array): Promise<any> {
-    const parsed = parsePath(path);
     const buf = Buffer.from(contents);
     const enc = buf.toString('base64');
     return this.sendSessionRequest({
       action: 'fs/upld',
       payload: {
-        args: [parsed.base],
+        args: [path],
         data: enc,
       },
     });

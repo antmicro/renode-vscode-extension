@@ -111,6 +111,12 @@ export class RenodePluginContext {
     return this.sendFileFromContent(path, data);
   }
 
+  async createDirectory(path: string): Promise<void> {
+    await this.connectGuard();
+
+    return this.currentSession!.createDirectory(path);
+  }
+
   async removeFile(path: string): Promise<any> {
     await this.connectGuard();
 

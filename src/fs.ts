@@ -59,12 +59,10 @@ export class RenodeFsProvider implements vscode.FileSystemProvider {
   }
 
   async createDirectory(uri: vscode.Uri): Promise<void> {
-    console.log('[!!!] got fs event: createDirectory', arguments);
-    throw new Error('Method not implemented.');
+    return this.pluginCtx.createDirectory(uri.path);
   }
 
   async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-    console.log('[!!!] got fs event: readFile', arguments);
     return this.pluginCtx.downloadFile(uri.path);
   }
 
