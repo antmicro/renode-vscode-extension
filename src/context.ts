@@ -105,10 +105,10 @@ export class RenodePluginContext {
   }
 
   async sendFileFromPath(path: string): Promise<any> {
-    const uri = vscode.Uri.file(path);
+    const uri = vscode.Uri.parse(path);
     const data = await vscode.workspace.fs.readFile(uri);
 
-    return this.sendFileFromContent(path, data);
+    return this.sendFileFromContent(uri.path, data);
   }
 
   async createDirectory(path: string): Promise<void> {
