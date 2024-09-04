@@ -6,6 +6,8 @@ import * as vscode from 'vscode';
 import { RenodeFsProvider } from './fs';
 import { RenodeHypervisorSession } from './common/connection';
 
+const DEFAULT_URI = 'ws://127.0.0.1:21234';
+
 export class RenodePluginContext {
   // TODO: Remove once more than one debugging session is supported.
   public isDebugging = false;
@@ -15,6 +17,7 @@ export class RenodePluginContext {
   private status: vscode.StatusBarItem;
   private preDisconnectEmitter: vscode.EventEmitter<RenodePluginContext>;
 
+  private advancedConnectCommand = 'renode.advancedSessionConnect';
   private connectCommand = 'renode.hypervisorConnect';
   private disconnectCommand = 'renode.hypervisorDisconnect';
 
@@ -25,6 +28,10 @@ export class RenodePluginContext {
     const connectCommand = vscode.commands.registerCommand(
       this.connectCommand,
       this.connectCommandHandler.bind(this),
+    );
+    const advancedConnectCommand = vscode.commands.registerCommand(
+      this.advancedConnectCommand,
+      this.advancedConnectCommandHandler.bind(this),
     );
     const disconnectCommand = vscode.commands.registerCommand(
       this.disconnectCommand,
@@ -38,6 +45,7 @@ export class RenodePluginContext {
     subscriptions.push(this.status);
 
     subscriptions.push(connectCommand);
+    subscriptions.push(advancedConnectCommand);
     subscriptions.push(disconnectCommand);
 
     const fsRegistration = vscode.workspace.registerFileSystemProvider(
@@ -47,6 +55,12 @@ export class RenodePluginContext {
     subscriptions.push(fsRegistration);
 
     this.updateStatus();
+  }
+
+  get defaultSessionBase(): string {
+    const cfg = vscode.workspace.getConfiguration('renode');
+    const uri = cfg.get<string>('defaultSessionUri');
+    return uri ?? DEFAULT_URI;
   }
 
   get sessionBase(): string | undefined {
@@ -158,18 +172,23 @@ export class RenodePluginContext {
     this.updateStatus();
   }
 
-  private async connectCommandHandler() {
-    const wsUri = await vscode.window.showInputBox({
+  private async advancedConnectCommandHandler() {
+    let response = await vscode.window.showInputBox({
       title: 'Session URI',
-      value: 'ws://127.0.0.1:21234',
-      prompt: 'Enter base URI, not the hypervisor subpath',
+      value: this.defaultSessionBase,
+      prompt: 'Enter base URI, not the proxy subpath',
     });
 
-    if (wsUri !== undefined) {
-      this.disconnectCommandHandler();
-      this.currentSession = await RenodeHypervisorSession.tryConnect(wsUri);
-      this.currentSession.addEventListener('close', () => this.onClose());
-    }
+    response = response?.trim();
+    const wsUri =
+      response === undefined || response === '' ? undefined : response;
+    return this.connectCommandHandler(wsUri);
+  }
+
+  private async connectCommandHandler(wsUri: string = this.defaultSessionBase) {
+    this.disconnectCommandHandler();
+    this.currentSession = await RenodeProxySession.tryConnect(wsUri);
+    this.currentSession.addEventListener('close', () => this.onClose());
 
     this.updateStatus();
   }

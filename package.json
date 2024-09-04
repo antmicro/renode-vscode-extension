@@ -23,10 +23,24 @@
   "browser": "./dist/web.js",
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Renode",
+      "properties": {
+        "renode.defaultSessionUri": {
+          "type": "string",
+          "default": "ws://127.0.0.1:21234",
+          "description": "Default base Uri for ws-proxy session"
+        }
+      }
+    },
     "commands": [
       {
         "command": "renode.hypervisorConnect",
         "title": "Renode: Connect to hypervisor"
+      },
+      {
+        "command": "renode.advancedSessionConnect",
+        "title": "Renode: Connect to session (Custom URI)"
       },
       {
         "command": "renode.mountFolder",
