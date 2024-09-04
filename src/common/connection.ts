@@ -64,7 +64,7 @@ export class RenodeProxySession extends EventTarget {
   }
 
   public async downloadZipToFs(zipUrl: string) {
-    this.sendSessionRequest({
+    return this.sendSessionRequest({
       action: 'fs/zip',
       payload: {
         args: [zipUrl],
