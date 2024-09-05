@@ -136,10 +136,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     this.initDebugger();
     this.setValuesFormattingMode('prettyPrinters');
     this.initialRunCommand = RunCommand.NONE;
-    const wsUri = new URL(
-      `/run/${args.gdb ?? 'gdb'}`,
-      this.pluginCtx.sessionBase,
-    );
+    const wsUri = new URL(`/run/${args.gdb ?? ''}`, this.pluginCtx.sessionBase);
 
     await this.miDebugger
       .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString())
