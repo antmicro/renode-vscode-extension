@@ -22,6 +22,9 @@
   ],
   "browser": "./dist/web.js",
   "main": "./dist/extension.js",
+  "files": [
+    "/dist"
+  ],
   "contributes": {
     "configuration": {
       "title": "Renode",
