@@ -25,6 +25,7 @@
   "files": [
     "/dist"
   ],
+  "types": "dist/index.d.ts",
   "contributes": {
     "configuration": {
       "title": "Renode",
@@ -134,15 +135,16 @@
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
-    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js && pnpm run emit-types",
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production && pnpm run emit-types",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
+    "emit-types": "dts-bundle-generator -o dist/index.d.ts src/extension.ts",
     "lint": "eslint src --ext ts && pnpm run fmt:check",
     "lint:fix": "eslint src --ext ts --fix && pnpm run fmt",
     "test": "vscode-test",
@@ -161,6 +163,7 @@
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
     "@vscode/vsce": "^2.30.0",
+    "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.21.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "eslint": "^8.57.0",
