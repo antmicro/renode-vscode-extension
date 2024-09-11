@@ -45,26 +45,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }),
   );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand('renode.downloadZip', async () => {
-      const cfg = vscode.workspace.getConfiguration('renode');
-      const zipUri = cfg.get<string>('downloadZip');
-      if (zipUri) {
-        ctx.downloadZipToFs(zipUri);
-      } else {
-        let response = await vscode.window.showInputBox({
-          title: 'ZIP file URL',
-          value: 'insert text',
-          prompt: 'Enter ZIP file URL to download',
-        });
-        response = response?.trim();
-        if (response) {
-          ctx.downloadZipToFs(response);
-        }
-      }
-    }),
-  );
 }
 
 export function deactivate() {
