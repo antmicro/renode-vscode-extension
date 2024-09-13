@@ -117,10 +117,10 @@ export class MI2DebugSession extends DebugSession {
   }
 
   protected handleMsg(type: string, msg: string) {
-    if (type == 'target') {
+    if (type === 'target') {
       type = 'stdout';
     }
-    if (type == 'log') {
+    if (type === 'log') {
       type = 'stderr';
     }
     this.sendEvent(new OutputEvent(msg, type));
@@ -132,7 +132,7 @@ export class MI2DebugSession extends DebugSession {
       parseInt(info.record('thread-id')),
     );
     (event as DebugProtocol.StoppedEvent).body.allThreadsStopped =
-      info.record('stopped-threads') == 'all';
+      info.record('stopped-threads') === 'all';
     this.sendEvent(event);
   }
 
@@ -142,7 +142,7 @@ export class MI2DebugSession extends DebugSession {
       info ? parseInt(info.record('thread-id')) : 1,
     );
     (event as DebugProtocol.StoppedEvent).body.allThreadsStopped = info
-      ? info.record('stopped-threads') == 'all'
+      ? info.record('stopped-threads') === 'all'
       : true;
     this.sendEvent(event);
   }
@@ -153,7 +153,7 @@ export class MI2DebugSession extends DebugSession {
       info ? parseInt(info.record('thread-id')) : 1,
     );
     (event as DebugProtocol.StoppedEvent).body.allThreadsStopped = info
-      ? info.record('stopped-threads') == 'all'
+      ? info.record('stopped-threads') === 'all'
       : true;
     this.sendEvent(event);
   }
@@ -168,7 +168,7 @@ export class MI2DebugSession extends DebugSession {
         parseInt(info.record('thread-id')),
       );
       (event as DebugProtocol.StoppedEvent).body.allThreadsStopped =
-        info.record('stopped-threads') == 'all';
+        info.record('stopped-threads') === 'all';
       this.sendEvent(event);
     }
   }
@@ -191,7 +191,7 @@ export class MI2DebugSession extends DebugSession {
       'stderr',
       'Could not start debugger process, does the program exist in filesystem?\n',
     );
-    this.handleMsg('stderr', err.toString() + '\n');
+    this.handleMsg('stderr', `${err.toString()}\n`);
     this.quitEvent();
   }
 
@@ -330,7 +330,7 @@ export class MI2DebugSession extends DebugSession {
         for (const thread of threads) {
           const threadName = thread.name || thread.targetId || '<unnamed>';
           response.body.threads.push(
-            new Thread(thread.id, thread.id + ':' + threadName),
+            new Thread(thread.id, `${thread.id}:${threadName}`),
           );
         }
         this.sendResponse(response);
@@ -372,7 +372,7 @@ export class MI2DebugSession extends DebugSession {
                 path.startsWith('\\cygdrive\\') ||
                 path.startsWith('/cygdrive/')
               ) {
-                path = path[10] + ':' + path.substring(11); // replaces /cygdrive/c/foo/bar.txt with c:/foo/bar.txt
+                path = `${path[10]}:${path.substring(11)}`; // replaces /cygdrive/c/foo/bar.txt with c:/foo/bar.txt
               }
             }
             path = this.convertDebuggerPathToClient(path);
@@ -381,7 +381,7 @@ export class MI2DebugSession extends DebugSession {
 
           let frame = new StackFrame(
             this.threadAndLevelToFrameId(args.threadId, element.level),
-            element.function + '@' + element.address,
+            `${element.function}@${element.address}`,
             source,
             element.line,
             0,
@@ -435,7 +435,7 @@ export class MI2DebugSession extends DebugSession {
         break;
       default:
         throw new Error(
-          'Unhandled run command: ' + RunCommand[this.initialRunCommand],
+          `Unhandled run command: ${RunCommand[this.initialRunCommand]}`,
         );
     }
     if (entryPoint) {
@@ -480,7 +480,7 @@ export class MI2DebugSession extends DebugSession {
       }
       default:
         throw new Error(
-          'Unhandled run command: ' + RunCommand[this.initialRunCommand],
+          `Unhandled run command: ${RunCommand[this.initialRunCommand]}`,
         );
     }
     Promise.all(promises)
@@ -504,7 +504,7 @@ export class MI2DebugSession extends DebugSession {
     const [threadId, level] = this.frameIdToThreadAndLevel(args.frameId);
 
     const createScope = (scopeName: string, expensive: boolean): Scope => {
-      const key: string = scopeName + ':' + threadId + ':' + level;
+      const key: string = `${scopeName}:${threadId}:${level}`;
       let handle: number;
 
       if (this.scopeHandlesReverse.hasOwnProperty(key)) {
@@ -562,7 +562,7 @@ export class MI2DebugSession extends DebugSession {
 
     if (id instanceof VariableScope) {
       try {
-        if (id.name == 'Registers') {
+        if (id.name === 'Registers') {
           const registers = await this.miDebugger!.getRegisters();
           for (const reg of registers) {
             variables.push({
@@ -598,7 +598,7 @@ export class MI2DebugSession extends DebugSession {
                 } catch (err) {
                   if (
                     err instanceof MIError &&
-                    (err.message == 'Variable object not found' ||
+                    (err.message === 'Variable object not found' ||
                       err.message.endsWith('does not exist'))
                   ) {
                     varObj = await this.miDebugger!.varCreate(
@@ -769,13 +769,13 @@ export class MI2DebugSession extends DebugSession {
                 );
               } else {
                 if (typeof expanded === 'string') {
-                  if (expanded == '<nullptr>') {
+                  if (expanded === '<nullptr>') {
                     if (argsPart) {
                       argsPart = false;
                     } else {
                       return submit();
                     }
-                  } else if (expanded[0] != '"') {
+                  } else if (expanded[0] !== '"') {
                     strArr.push({
                       name: '[err]',
                       value: expanded,
@@ -935,7 +935,7 @@ export class MI2DebugSession extends DebugSession {
     args: DebugProtocol.EvaluateArguments,
   ): void {
     const [threadId, level] = this.frameIdToThreadAndLevel(args.frameId!);
-    if (args.context == 'watch' || args.context == 'hover') {
+    if (args.context === 'watch' || args.context === 'hover') {
       this.miDebugger!.evalExpression(args.expression, threadId, level).then(
         res => {
           response.body = {

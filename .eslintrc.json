@@ -3,7 +3,8 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 6,
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "tsconfig.json"
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
@@ -14,11 +15,12 @@
         "format": ["camelCase", "PascalCase"]
       }
     ],
-    "@typescript-eslint/semi": "warn",
-    "curly": "warn",
-    "eqeqeq": "warn",
-    "no-throw-literal": "warn",
-    "semi": "off"
+    "@typescript-eslint/semi": "error",
+    "curly": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-throw-literal": "error",
+    "semi": ["error", "always"],
+    "prefer-template": "warn"
   },
   "ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }

@@ -18,7 +18,7 @@ export class RenodeProxySession extends EventTarget {
   private requestQueue: EmptyCallback[] = [];
 
   public static async tryConnect(wsUri: string, workspace: string) {
-    const uri = new URL('/proxy/' + workspace, wsUri);
+    const uri = new URL(`/proxy/${workspace}`, wsUri);
     const socket = await tryConnectWs(uri.toString());
     return new RenodeProxySession(socket, wsUri);
   }
