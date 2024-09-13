@@ -133,6 +133,7 @@
     "__build": "pnpm run check-types && pnpm run lint && node esbuild.js",
     "vscode:prepublish": "pnpm run package",
     "compile": "pnpm run __build && pnpm run emit-types",
+    "compile:all": "pnpm run __build --tests && pnpm run emit-types",
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
@@ -143,6 +144,8 @@
     "lint:fix": "pnpm run fmt:fix && eslint src --ext ts --fix",
     "fmt": "prettier --check .",
     "fmt:fix": "prettier --write .",
+    "test": "pnpm run __build --tests && pnpm run test:prebuilt",
+    "test:prebuilt": "node out/tests/e2e/runner.js",
     "v:pack": "vsce pack --pre-release --no-dependencies"
   },
   "devDependencies": {
@@ -155,12 +158,15 @@
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
+    "@vscode/test-web": "^0.0.60",
     "@vscode/vsce": "^2.30.0",
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.21.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "eslint": "^8.57.0",
+    "glob": "^11.0.0",
     "isomorphic-ws": "^5.0.0",
+    "mocha": "^10.7.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "typescript": "^5.4.5"

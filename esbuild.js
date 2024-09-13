@@ -1,8 +1,11 @@
 const esbuild = require('esbuild');
 const { polyfillNode } = require('esbuild-plugin-polyfill-node');
+const { glob } = require('glob');
+const path = require('path');
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
+const tests = process.argv.includes('--tests');
 
 /**
  * @type {import('esbuild').Plugin}
@@ -27,13 +30,14 @@ const esbuildProblemMatcherPlugin = {
 };
 
 function esbuildContext(
-  entryPoints,
+  entryPoint,
   outfile,
   platform = 'node',
   extraPlugins = [],
+  extraArgs = {},
 ) {
   return esbuild.context({
-    entryPoints,
+    entryPoints: [entryPoint],
     bundle: true,
     format: 'cjs',
     minify: production,
@@ -48,25 +52,50 @@ function esbuildContext(
       /* add to the end of plugins array */
       esbuildProblemMatcherPlugin,
     ],
+    ...extraArgs,
   });
 }
 
-async function main() {
-  const ctxMain = await esbuildContext(
-    ['src/extension.ts'],
-    'dist/extension.js',
+async function prepareTestContexts(polyfillPlugin) {
+  const e2e = await esbuildContext(
+    'src/tests/e2e/index.ts',
+    'out/tests/e2e/index.js',
+    'browser',
+    [polyfillPlugin],
   );
+  const e2eRunner = await esbuildContext(
+    'src/tests/e2e/runner.ts',
+    'out/tests/e2e/runner.js',
+    'node',
+    [],
+    { packages: 'external', external: [] },
+  );
+
+  return [e2e, e2eRunner];
+}
+
+async function main() {
+  const polyfillPlugin = polyfillNode({});
+  const ctxMain = await esbuildContext('src/extension.ts', 'dist/extension.js');
   const ctxWeb = await esbuildContext(
-    ['src/extension.ts'],
+    'src/extension.ts',
     'dist/web.js',
     'browser',
-    [polyfillNode({})],
+    [polyfillPlugin],
   );
+
+  /** @type {esbuild.BuildContext<esbuild.BuildOptions>[]} */
+  const testCtxs = await (tests
+    ? prepareTestContexts(polyfillPlugin)
+    : Promise.resolve([]));
+
+  const allCtxs = [ctxMain, ctxWeb, ...testCtxs];
+
   if (watch) {
-    await Promise.all([ctxMain.watch(), ctxWeb.watch()]);
+    await Promise.all(allCtxs.map(ctx => ctx.watch()));
   } else {
-    await Promise.all([ctxMain.rebuild(), ctxWeb.rebuild()]);
-    await Promise.all([ctxMain.dispose(), ctxWeb.dispose()]);
+    await Promise.all(allCtxs.map(ctx => ctx.rebuild()));
+    await Promise.all(allCtxs.map(ctx => ctx.dispose()));
   }
 }
 
