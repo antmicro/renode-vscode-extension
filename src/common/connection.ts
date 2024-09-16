@@ -5,7 +5,6 @@
 import WebSocket from 'isomorphic-ws';
 import { Buffer } from 'buffer';
 import { tryConnectWs, tryJsonParse } from '../utils';
-import { parse as parsePath } from 'path';
 
 class SocketClosedEvent extends Event {
   constructor() {
@@ -14,8 +13,7 @@ class SocketClosedEvent extends Event {
 }
 
 export class RenodeProxySession extends EventTarget {
-  private pendingRequest?: PendingRequest;
-  private requestQueue: EmptyCallback[] = [];
+  private requestQueue: RequestCallback[] = [];
 
   public static async tryConnect(wsUri: string, workspace: string) {
     const uri = new URL(`/proxy/${workspace}`, wsUri);
@@ -151,33 +149,22 @@ export class RenodeProxySession extends EventTarget {
   // *** Event handlers ***
 
   private onData(data: string) {
-    this.pendingRequest?._onData(data);
-    this.pendingRequest = undefined;
+    this.requestQueue.shift()?.(data);
   }
 
   private onError() {
-    this.pendingRequest?._onError('WebSocket error');
-    this.pendingRequest = undefined;
+    this.requestQueue.shift()?.(undefined, new Error('WebSocket error'));
   }
 
   private onClose() {
-    this.pendingRequest?._onError('WebSocket closed');
-    this.pendingRequest = undefined;
+    while (this.requestQueue.length) {
+      this.requestQueue.shift()?.(undefined, new Error('WebSocket closed'));
+    }
 
     this.dispatchEvent(new SocketClosedEvent());
   }
 
   // *** Utilities ***
-
-  // Wait for current request to finish, so we can make another one.
-  // Must be called before making any request.
-  private async waitForCurrentRequest() {
-    if (this.pendingRequest) {
-      return new Promise<void>(resolve => {
-        this.requestQueue.push(() => resolve());
-      });
-    }
-  }
 
   private async sendSessionRequest(req: {
     action: string;
@@ -205,22 +192,16 @@ export class RenodeProxySession extends EventTarget {
 
   private sendInner(msg: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      await this.waitForCurrentRequest();
       console.log('[DEBUG] sending message to session', msg);
 
       if (this.sessionSocket) {
-        this.pendingRequest = new PendingRequest(
-          (res, err) => {
-            if (err) {
-              return reject(err);
-            }
+        this.requestQueue.push((res, err) => {
+          if (err) {
+            reject(err);
+          } else {
             resolve(res);
-          },
-          () => {
-            const nextReq = this.requestQueue.shift();
-            nextReq?.();
-          },
-        );
+          }
+        });
         this.sessionSocket.send(msg);
       } else {
         reject(new Error('Not connected'));
@@ -229,22 +210,4 @@ export class RenodeProxySession extends EventTarget {
   }
 }
 
-type EmptyCallback = () => void;
 type RequestCallback = (response: any, error?: any) => void;
-
-class PendingRequest {
-  constructor(
-    private callback: RequestCallback,
-    private endCallback?: EmptyCallback,
-  ) {}
-
-  _onData(data: any) {
-    this.callback(data);
-    this.endCallback?.();
-  }
-
-  _onError(err: any) {
-    this.callback(undefined, err);
-    this.endCallback?.();
-  }
-}
