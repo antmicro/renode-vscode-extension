@@ -18,7 +18,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "browser": "./dist/web.js",
   "main": "./dist/extension.js",
