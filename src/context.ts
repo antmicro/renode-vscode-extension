@@ -5,6 +5,7 @@
 import * as vscode from 'vscode';
 import { RenodeFsProvider } from './fs';
 import { RenodeProxySession } from './common/connection';
+import { Sensor, SensorType, SensorValue } from './common/sensor';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';
 
@@ -97,6 +98,28 @@ export class RenodePluginContext {
     await this.connectGuard();
 
     return this.currentSession!.getMachines();
+  }
+
+  async getSensors(machine: string): Promise<Sensor[]> {
+    await this.connectGuard();
+
+    return this.currentSession!.getSensors(machine);
+  }
+
+  async getSensorValue(sensor: Sensor, type: SensorType): Promise<SensorValue> {
+    await this.connectGuard();
+
+    return this.currentSession!.getSensorValue(sensor, type);
+  }
+
+  async setSensorValue(
+    sensor: Sensor,
+    type: SensorType,
+    value: SensorValue,
+  ): Promise<void> {
+    await this.connectGuard();
+
+    return this.currentSession!.setSensorValue(sensor, type, value);
   }
 
   async stopRenode() {

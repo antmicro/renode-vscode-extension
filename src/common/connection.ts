@@ -5,6 +5,13 @@
 import WebSocket from 'isomorphic-ws';
 import { Buffer } from 'buffer';
 import { tryConnectWs, tryJsonParse } from '../utils';
+import {
+  GetSensorValue,
+  Sensor,
+  SensorType,
+  SensorTypeFromString,
+  SensorValue,
+} from './sensor';
 
 class SocketClosedEvent extends Event {
   constructor() {
@@ -76,6 +83,60 @@ export class RenodeProxySession extends EventTarget {
       action: 'exec-renode',
       payload: {
         command: 'machines',
+      },
+    });
+  }
+
+  public async getSensors(
+    machine: string,
+    type?: SensorType,
+  ): Promise<Sensor[]> {
+    let sensorType = type === undefined ? {} : { type };
+    let result = await this.sendSessionRequest({
+      action: 'exec-renode',
+      payload: {
+        command: 'sensors',
+        args: { machine, ...sensorType },
+      },
+    });
+    return result.map(
+      (entry: { name: string; types: string[] }) =>
+        new Sensor(
+          machine,
+          entry.name,
+          entry.types.map(type => SensorTypeFromString(type)!),
+        ),
+    );
+  }
+
+  public getSensorValue(
+    sensor: Sensor,
+    type: SensorType,
+  ): Promise<SensorValue> {
+    return this.sendSessionRequest({
+      action: 'exec-renode',
+      payload: {
+        command: 'sensor-get',
+        args: { machine: sensor.machine, peripheral: sensor.name, type },
+      },
+    }).then(result => GetSensorValue(type, result));
+  }
+
+  public setSensorValue(
+    sensor: Sensor,
+    type: SensorType,
+    value: SensorValue,
+  ): Promise<void> {
+    return this.sendSessionRequest({
+      action: 'exec-renode',
+      payload: {
+        command: 'sensor-set',
+        args: {
+          machine: sensor.machine,
+          peripheral: sensor.name,
+          type,
+          value: value.sample,
+        },
       },
     });
   }
