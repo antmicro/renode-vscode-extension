@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as vscode from 'vscode';
-import { RenodeGdbDebugSession } from './program/gdb';
+import * as utils from './utils';
+import { LaunchRequestArguments, RenodeGdbDebugSession } from './program/gdb';
 import { registerConsoleCommands } from './program/consoleCommand';
 import { RenodePluginContext } from './context';
 
@@ -49,3 +50,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+export { LaunchRequestArguments as RenodeLaunchRequestArguments, utils };
