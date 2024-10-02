@@ -124,7 +124,12 @@ export class MI2 extends EventEmitter implements IBackend {
   }
   protected logMessage: LogMessage = new LogMessage();
 
-  protected initCommands(target: string, cwd: string, attach: boolean = false) {
+  protected initCommands(
+    target: string,
+    cwd: string,
+    attach: boolean = false,
+    readSources: boolean = true,
+  ) {
     // We need to account for the possibility of the path type used by the debugger being different
     // from the path type where the extension is running (e.g., SSH from Linux to Windows machine).
     // Since the CWD is expected to be an absolute path in the debugger's environment, we can test
@@ -152,6 +157,12 @@ export class MI2 extends EventEmitter implements IBackend {
       }),
       this.sendCommand(`environment-directory "${escape(cwd)}"`, true),
     ];
+    cmds.push(
+      this.sendCommand(
+        `gdb-set source open ${readSources ? 'on' : 'off'}`,
+        true,
+      ),
+    );
     if (!attach) {
       this._target = target;
       cmds.push(this.sendCommand(`file-exec-and-symbols "${escape(target)}"`));
@@ -171,6 +182,7 @@ export class MI2 extends EventEmitter implements IBackend {
     executable: string,
     target: string,
     wsUri: string,
+    isRemote: boolean,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       let args = [];
@@ -185,7 +197,7 @@ export class MI2 extends EventEmitter implements IBackend {
         this.emit('launcherror', 'websocket error'),
       );
       this.socket.addEventListener('open', () => {
-        let promises = this.initCommands(executable, cwd, false);
+        let promises = this.initCommands(executable, cwd, false, !isRemote);
         promises.push(this.sendCommand(`target-select remote ${target}`));
         Promise.all(promises)
           .then(() => {

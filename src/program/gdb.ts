@@ -142,7 +142,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     const wsUri = new URL(`/run/${args.gdb ?? ''}`, this.pluginCtx.sessionBase);
 
     await this.miDebugger
-      .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString())
+      .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString(), isRemote)
       .catch(err => {
         throw new Error(`Failed to load debugger: ${err}`);
       });
