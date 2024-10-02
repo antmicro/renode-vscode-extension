@@ -121,9 +121,11 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
     ];
 
-    await this.pluginCtx.startRenode(args.cwd).catch(() => {
-      throw new Error('Renode did not start');
-    });
+    await this.pluginCtx
+      .startRenode(isRemote ? undefined : args.cwd)
+      .catch(() => {
+        throw new Error('Renode did not start');
+      });
 
     await this.pluginCtx.execMonitor(monitorCommands).catch(() => {
       throw new Error('Renode did not execute initial commands');
