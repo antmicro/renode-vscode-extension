@@ -21,7 +21,9 @@ export class RenodePluginContext {
   private connectCommand = 'renode.sessionConnect';
   private disconnectCommand = 'renode.sessionDisconnect';
 
-  constructor(subscriptions: any[]) {
+  private disposables: vscode.Disposable[] = [];
+
+  constructor() {
     this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
     this.onPreDisconnect = this.preDisconnectEmitter.event;
 
@@ -42,17 +44,17 @@ export class RenodePluginContext {
       vscode.StatusBarAlignment.Left,
       100,
     );
-    subscriptions.push(this.status);
+    this.disposables.push(this.status);
 
-    subscriptions.push(connectCommand);
-    subscriptions.push(advancedConnectCommand);
-    subscriptions.push(disconnectCommand);
+    this.disposables.push(connectCommand);
+    this.disposables.push(advancedConnectCommand);
+    this.disposables.push(disconnectCommand);
 
     const fsRegistration = vscode.workspace.registerFileSystemProvider(
       'renodehyp',
       new RenodeFsProvider(this),
     );
-    subscriptions.push(fsRegistration);
+    this.disposables.push(fsRegistration);
 
     this.updateStatus();
   }
@@ -171,7 +173,8 @@ export class RenodePluginContext {
 
   dispose() {
     this.currentSession?.dispose();
-    this.status.dispose();
+
+    this.disposables.forEach(disposable => disposable.dispose());
   }
 
   private updateStatus() {
