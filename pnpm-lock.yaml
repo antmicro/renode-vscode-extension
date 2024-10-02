@@ -14,9 +14,9 @@ importers:
       '@vscode/debugprotocol':
         specifier: ^1.66.0
         version: 1.66.0
-      ws:
-        specifier: ^8.18.0
-        version: 8.18.0
+      isomorphic-ws:
+        specifier: ^5.0.0
+        version: 5.0.0(ws@8.18.0)
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.7
@@ -66,9 +66,6 @@ importers:
       glob:
         specifier: ^11.0.0
         version: 11.0.0
-      isomorphic-ws:
-        specifier: ^5.0.0
-        version: 5.0.0(ws@8.18.0)
       mocha:
         specifier: ^10.7.3
         version: 10.7.3
