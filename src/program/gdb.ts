@@ -82,6 +82,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       throw new Error('Only one debugging session is supported');
     }
 
+    vscode.window.showInformationMessage('Starting Renode');
     const isRemote = args.remoteSession ?? false;
 
     this.pluginCtx.isDebugging = true;
@@ -265,6 +266,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     this.miDebugger?.detach();
 
     if (this.renodeStarted) {
+      vscode.window.showInformationMessage('Stopping Renode');
       await this.pluginCtx
         .stopRenode()
         .then(() => {
