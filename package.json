@@ -68,6 +68,10 @@
         "title": "Renode: Open UART console"
       },
       {
+        "command": "renode.openAllUartConsoles",
+        "title": "Renode: Open all UART consoles"
+      },
+      {
         "command": "renode.openLogs",
         "title": "Renode: Open Logs"
       }

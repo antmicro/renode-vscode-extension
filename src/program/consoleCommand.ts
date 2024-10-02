@@ -11,17 +11,60 @@ export function registerConsoleCommands(
   pluginCtx: RenodePluginContext,
 ) {
   const initialPort = 29170;
+  let currentPort = { lastPort: initialPort };
   const uartCommand = vscode.commands.registerCommand(
     'renode.openUartConsole',
-    openUartConsoleCommandHandler.bind({ lastPort: initialPort }, pluginCtx),
+    openUartConsoleCommandHandler.bind(currentPort, pluginCtx),
   );
   subscriptions.push(uartCommand);
+
+  const allUartsCommand = vscode.commands.registerCommand(
+    'renode.openAllUartConsoles',
+    openAllUartConsolesCommandHandler.bind(currentPort, pluginCtx),
+  );
+  subscriptions.push(allUartsCommand);
 
   const logsCommand = vscode.commands.registerCommand(
     'renode.openLogs',
     openLogsConsoleCommandHandler.bind({ logsPort: initialPort }, pluginCtx),
   );
   subscriptions.push(logsCommand);
+}
+
+async function openAllUartConsolesCommandHandler(
+  this: { lastPort: number },
+  pluginCtx: RenodePluginContext,
+) {
+  if (!pluginCtx.socketReady) {
+    vscode.window.showErrorMessage('Renode not connected!');
+    return;
+  }
+
+  let mappings: [number, string, string][] = [];
+  for (const machine of await pluginCtx.getMachines()) {
+    const uarts = await pluginCtx.getUarts(machine);
+    for (const uart of uarts) {
+      this.lastPort += 1;
+      const port = this.lastPort;
+      const monitorCommands = [
+        `mach set "${machine}"`,
+        `emulation CreateServerSocketTerminal ${port} "sst-${port}"`,
+        `sst-${port} AttachTo sysbus.${uart}`,
+      ];
+      await pluginCtx.execMonitor(monitorCommands);
+      mappings.push([port, machine, uart]);
+    }
+  }
+
+  const terminals = mappings.map(([port, machine, uart]) => {
+    const term = createRenodeWebSocketTerminal(
+      `${uart} (${machine})`,
+      `${pluginCtx.sessionBase}/telnet/${port}`,
+    );
+    term.show(true);
+    return term;
+  });
+  pluginCtx.onPreDisconnect(() => terminals.forEach(term => term.dispose()));
 }
 
 async function openUartConsoleCommandHandler(
