@@ -133,8 +133,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.renodeStarted = true;
     vscode.window.showInformationMessage('Renode started');
-    // TODO: Detect when Renode has started instead of always waiting 3s
-    await new Promise(r => setTimeout(r, 3000));
     const gdbPath = 'gdb';
     this.mappings = Object.entries(args.pathMappings ?? {});
     this.miDebugger = new MI2(gdbPath, ['-q', '--interpreter=mi2'], [], null);
