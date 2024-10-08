@@ -21,6 +21,11 @@ function randomPort(): number {
   return Math.floor(r);
 }
 
+interface PeripheralHint {
+  machine?: string;
+  name: string;
+}
+
 export interface LaunchRequestArguments
   extends DebugProtocol.LaunchRequestArguments {
   resc?: string;
@@ -29,7 +34,7 @@ export interface LaunchRequestArguments
   cwd: string;
   gdb?: string;
   pathMappings?: object;
-  terminals?: string[];
+  terminals?: (string | PeripheralHint)[];
   extraMonitorCommands?: string[];
   cpuCluster?: string;
   // TODO: Work on autodetection
@@ -147,15 +152,10 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       .catch(err => {
         throw new Error(`Failed to load debugger: ${err}`);
       });
-    this.terminals = (args.terminals ?? []).map((terminal, i) => {
-      const name = `Terminal ${i}`;
-      const res = vscode.window.createTerminal({
-        name,
-        pty: new RenodeWebSocketPseudoTerminal(name, terminal),
-      });
-      res.show(false);
-      return res;
-    });
+
+    this.terminals = await Promise.all(
+      this.handleTerminals(args.terminals ?? []),
+    );
   }
 
   protected override async launchRequest(
@@ -255,6 +255,57 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
   override sendResponse(response: DebugProtocol.Response): void {
     super.sendResponse(response);
+  }
+
+  private handleUrlTerminal(
+    terminal: string,
+    id: number,
+  ): Promise<vscode.Terminal> {
+    const name = `Terminal ${id}`;
+    const res = vscode.window.createTerminal({
+      name,
+      pty: new RenodeWebSocketPseudoTerminal(name, terminal),
+    });
+    res.show(false);
+    return new Promise((resolve, reject) => resolve(res));
+  }
+
+  private async handleNamedUartTerminal(
+    terminal: PeripheralHint,
+  ): Promise<vscode.Terminal> {
+    const machines = await this.pluginCtx.getMachines();
+    if ('machine' in terminal && terminal.machine) {
+      if (machines.find(m => m === terminal.machine) === undefined) {
+        throw new Error(`machine '${terminal.machine} does not exist`);
+      }
+    } else {
+      if (machines.length !== 1) {
+        throw new Error(`multiple machine options for UART '${terminal.name}'`);
+      }
+      terminal.machine = machines[0];
+    }
+
+    const uarts = await this.pluginCtx.getUarts(terminal.machine);
+    if (uarts.find(u => u === terminal.name) === undefined) {
+      throw new Error(
+        `UART '${terminal.name}' is not a part of machine '${terminal.machine}'`,
+      );
+    }
+
+    return this.pluginCtx.createUARTTerminal(terminal.machine, terminal.name);
+  }
+
+  private handleTerminals(
+    terminals: (string | PeripheralHint)[],
+  ): Promise<vscode.Terminal>[] {
+    let i = 0;
+    return terminals.map(terminal => {
+      if (typeof terminal === 'string') {
+        return this.handleUrlTerminal(terminal, i++);
+      } else {
+        return this.handleNamedUartTerminal(terminal);
+      }
+    });
   }
 
   private async disconnect(): Promise<void> {
