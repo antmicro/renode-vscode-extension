@@ -3,36 +3,33 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as vscode from 'vscode';
-import { RenodePluginContext } from '../context';
+import { RenodePluginContext, INITIAL_PORT } from '../context';
 import { createRenodeWebSocketTerminal } from '../console';
 
 export function registerConsoleCommands(
   subscriptions: any[],
   pluginCtx: RenodePluginContext,
 ) {
-  const initialPort = 29170;
-  let currentPort = { lastPort: initialPort };
   const uartCommand = vscode.commands.registerCommand(
     'renode.openUartConsole',
-    openUartConsoleCommandHandler.bind(currentPort, pluginCtx),
+    openUartConsoleCommandHandler.bind(undefined, pluginCtx),
   );
   subscriptions.push(uartCommand);
 
   const allUartsCommand = vscode.commands.registerCommand(
     'renode.openAllUartConsoles',
-    openAllUartConsolesCommandHandler.bind(currentPort, pluginCtx),
+    openAllUartConsolesCommandHandler.bind(undefined, pluginCtx),
   );
   subscriptions.push(allUartsCommand);
 
   const logsCommand = vscode.commands.registerCommand(
     'renode.openLogs',
-    openLogsConsoleCommandHandler.bind({ logsPort: initialPort }, pluginCtx),
+    openLogsConsoleCommandHandler.bind({ logsPort: INITIAL_PORT }, pluginCtx),
   );
   subscriptions.push(logsCommand);
 }
 
 async function openAllUartConsolesCommandHandler(
-  this: { lastPort: number },
   pluginCtx: RenodePluginContext,
 ) {
   if (!pluginCtx.socketReady) {
@@ -40,37 +37,16 @@ async function openAllUartConsolesCommandHandler(
     return;
   }
 
-  let mappings: [number, string, string][] = [];
-  for (const machine of await pluginCtx.getMachines()) {
-    const uarts = await pluginCtx.getUarts(machine);
-    for (const uart of uarts) {
-      this.lastPort += 1;
-      const port = this.lastPort;
-      const monitorCommands = [
-        `mach set "${machine}"`,
-        `emulation CreateServerSocketTerminal ${port} "sst-${port}"`,
-        `sst-${port} AttachTo ${uart}`,
-      ];
-      await pluginCtx.execMonitor(monitorCommands);
-      mappings.push([port, machine, uart]);
-    }
-  }
-
-  const terminals = mappings.map(([port, machine, uart]) => {
-    const term = createRenodeWebSocketTerminal(
-      `${uart} (${machine})`,
-      `${pluginCtx.sessionBase}/telnet/${port}`,
-    );
-    term.show(true);
-    return term;
-  });
-  pluginCtx.onPreDisconnect(() => terminals.forEach(term => term.dispose()));
+  const machines = await pluginCtx.getMachines();
+  await Promise.all(
+    machines.flatMap(async machine => {
+      const uarts = await pluginCtx.getUarts(machine);
+      return uarts.map(uart => pluginCtx.createUARTTerminal(machine, uart));
+    }),
+  );
 }
 
-async function openUartConsoleCommandHandler(
-  this: { lastPort: number },
-  pluginCtx: RenodePluginContext,
-) {
+async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
   if (!pluginCtx.socketReady) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
@@ -105,23 +81,7 @@ async function openUartConsoleCommandHandler(
     }
   }
 
-  // TODO: add protocol support for ws endpoint creation with uart terminal
-  this.lastPort += 1;
-  let monitorCommands = [
-    `mach set "${machineName}"`,
-    `emulation CreateServerSocketTerminal ${this.lastPort} "sst-${this.lastPort}"`,
-    `sst-${this.lastPort} AttachTo ${uartName}`,
-  ];
-
-  await pluginCtx.execMonitor(monitorCommands);
-  const term = createRenodeWebSocketTerminal(
-    `${uartName} (${machineName})`,
-    `${pluginCtx.sessionBase}/telnet/${this.lastPort}`,
-  );
-  term.show(false);
-  pluginCtx.onPreDisconnect(() => {
-    term.dispose();
-  });
+  await pluginCtx.createUARTTerminal(machineName, uartName);
 }
 
 function openLogsConsoleCommandHandler(
