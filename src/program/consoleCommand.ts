@@ -49,7 +49,7 @@ async function openAllUartConsolesCommandHandler(
       const monitorCommands = [
         `mach set "${machine}"`,
         `emulation CreateServerSocketTerminal ${port} "sst-${port}"`,
-        `sst-${port} AttachTo sysbus.${uart}`,
+        `sst-${port} AttachTo ${uart}`,
       ];
       await pluginCtx.execMonitor(monitorCommands);
       mappings.push([port, machine, uart]);
@@ -110,7 +110,7 @@ async function openUartConsoleCommandHandler(
   let monitorCommands = [
     `mach set "${machineName}"`,
     `emulation CreateServerSocketTerminal ${this.lastPort} "sst-${this.lastPort}"`,
-    `sst-${this.lastPort} AttachTo sysbus.${uartName}`,
+    `sst-${this.lastPort} AttachTo ${uartName}`,
   ];
 
   await pluginCtx.execMonitor(monitorCommands);
