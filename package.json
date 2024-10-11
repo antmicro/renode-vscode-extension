@@ -27,6 +27,24 @@
   ],
   "types": "dist/index.d.ts",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sensors-button",
+          "title": "Sensors",
+          "icon": "img/list-view.svg"
+        }
+      ]
+    },
+    "views": {
+      "sensors-button": [
+        {
+          "id": "sensors-info",
+          "name": "Active sensors",
+          "type": "webview"
+        }
+      ]
+    },
     "configuration": {
       "title": "Renode",
       "properties": {
