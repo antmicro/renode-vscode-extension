@@ -8,6 +8,7 @@ import { LaunchRequestArguments, RenodeGdbDebugSession } from './program/gdb';
 import { registerConsoleCommands } from './program/consoleCommand';
 import { SensorsViewProvider } from './program/sensorsWebview';
 import { RenodePluginContext } from './context';
+import { RenodeSetup } from './setup';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Renode extension loaded');
@@ -85,6 +86,10 @@ export function activate(context: vscode.ExtensionContext) {
       trackerFactory,
     ),
   );
+  let setup = new RenodeSetup(context);
+  setup.getRenode().then(path => {
+    vscode.window.showInformationMessage(path);
+  });
 }
 
 export function deactivate() {}
