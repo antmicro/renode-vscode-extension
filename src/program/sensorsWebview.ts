@@ -281,7 +281,14 @@ export class SensorsViewProvider implements vscode.WebviewViewProvider {
       throw new Error(`Invalid sensor type: ${type}`);
     }
 
-    const newSensorValue = GetSensorValue(sensorType, parseFloat(newValue));
+    let newSensorValue: SensorValue;
+    try {
+      newSensorValue = GetSensorValue(sensorType, parseFloat(newValue), true);
+    } catch (err) {
+      vscode.window.showErrorMessage(`Failed to set sensor value: ${err}`);
+      return;
+    }
+
     const machines = await this.renodeCtx.getMachines();
     const targetMachine = machines.find(m => m === machine);
 

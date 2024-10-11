@@ -25,24 +25,35 @@ export function SensorTypeFromString(value: string): SensorType | undefined {
     : undefined;
 }
 
-export function GetSensorValue(type: SensorType, value: any): SensorValue {
+export function GetSensorValue(
+  type: SensorType,
+  value: any,
+  pretty: boolean = false,
+): SensorValue {
+  const getValueMethod = (ValueClass: any, valueArgs: any[]) =>
+    pretty ? ValueClass.FromValue(...valueArgs) : new ValueClass(...valueArgs);
+
   switch (type) {
     case SensorType.Temperature:
-      return new TemperatureValue(value);
+      return getValueMethod(TemperatureValue, [value]);
     case SensorType.Acceleration:
-      return new AccelerationValue(value.x, value.y, value.z);
+      return getValueMethod(AccelerationValue, [value.x, value.y, value.z]);
     case SensorType.AngularRate:
-      return new AngularRateValue(value.x, value.y, value.z);
+      return getValueMethod(AngularRateValue, [value.x, value.y, value.z]);
     case SensorType.Voltage:
-      return new VoltageValue(value);
+      return getValueMethod(VoltageValue, [value]);
     case SensorType.ECG:
-      return new ECGValue(value);
+      return getValueMethod(ECGValue, [value]);
     case SensorType.Humidity:
-      return new HumidityValue(value);
+      return getValueMethod(HumidityValue, [value]);
     case SensorType.Pressure:
-      return new PressureValue(value);
+      return getValueMethod(PressureValue, [value]);
     case SensorType.MagneticFluxDensity:
-      return new MagneticFluxDensityValue(value.x, value.y, value.z);
+      return getValueMethod(MagneticFluxDensityValue, [
+        value.x,
+        value.y,
+        value.z,
+      ]);
     default:
       throw Error('Invalid sensor type');
   }
