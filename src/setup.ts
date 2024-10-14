@@ -5,13 +5,12 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
+import stream, { Readable } from 'stream';
 import childprocess, { ChildProcess } from 'child_process';
 import { promisify } from 'util';
 import { spawnSync } from 'child_process';
 import { RenodePluginContext } from './context';
-const spawn = promisify(childprocess.spawn);
+const finished = promisify(stream.finished);
 
 const RENODE_URL =
   'https://builds.renode.io/renode-latest.linux-portable-dotnet.tar.gz';
