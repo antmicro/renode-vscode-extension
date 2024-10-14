@@ -86,10 +86,12 @@ export function activate(context: vscode.ExtensionContext) {
       trackerFactory,
     ),
   );
-  let setup = new RenodeSetup(context);
-  setup.getRenode().then(path => {
-    vscode.window.showInformationMessage(path);
-  });
+  let setup = new RenodeSetup(context, ctx);
+  setup.setup().then(
+    (val) => {
+      vscode.window.showInformationMessage('Setup finished');
+    }
+  );
 }
 
 export function deactivate() {}
