@@ -115,7 +115,7 @@ function prepareWsProxy() {
   console.log('Starting ws-proxy');
   const proc = spawn(
     pythonBin,
-    ['renode_ws_proxy/ws_proxy.py', renodePath, workdir, gdbBin],
+    ['renode_ws_proxy/ws_proxy.py', '-g', gdbBin, renodePath, workdir],
     {
       cwd: realWsProxyPath,
     },
