@@ -48,6 +48,19 @@
     "configuration": {
       "title": "Renode",
       "properties": {
+        "renode.customRenodePath": {
+          "type": "string",
+          "description": "Use Renode binary located at this path instead of extensions own. Note that only dotnet portable Renode is supported at this time"
+        },
+        "renode.customWSProxyPath": {
+          "type": "string",
+          "description": "Use Renode WS Proxy located at this path instead of extensions own"
+        },
+        "renode.automaticWSProxyManagement": {
+          "type": "boolean",
+          "default": "true",
+          "description": "When enabled, the extension will manage starting Renode WS Proxy. Disable if running WS proxy manually"
+        },
         "renode.defaultSessionUri": {
           "type": "string",
           "default": "ws://127.0.0.1:21234",
