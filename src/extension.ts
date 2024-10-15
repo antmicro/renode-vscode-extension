@@ -9,6 +9,7 @@ import { registerConsoleCommands } from './program/consoleCommand';
 import { SensorsViewProvider } from './program/sensorsWebview';
 import { RenodePluginContext } from './context';
 import { RenodeSetup } from './setup';
+import { setTimeout } from 'timers/promises';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Renode extension loaded');
@@ -89,6 +90,10 @@ export function activate(context: vscode.ExtensionContext) {
   let setup = new RenodeSetup(context);
   setup.setup().then(disposable => {
     context.subscriptions.push(disposable);
+    // Wait 500ms for WS proxy to have time to start, and then try to connect
+    setTimeout(500).then(() => {
+      vscode.commands.executeCommand('renode.sessionConnect');
+    });
   });
 }
 
