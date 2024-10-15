@@ -61,6 +61,11 @@
           "default": "true",
           "description": "When enabled, the extension will manage starting Renode WS Proxy. Disable if running WS proxy manually"
         },
+        "renode.defaultGDB": {
+          "type": "string",
+          "description": "Which GDB should be used if the project does not specify",
+          "default": "gdb-multiarch"
+        },
         "renode.defaultSessionUri": {
           "type": "string",
           "default": "ws://127.0.0.1:21234",
