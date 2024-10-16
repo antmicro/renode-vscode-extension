@@ -82,6 +82,10 @@
         "title": "Renode: Disconnect from session"
       },
       {
+        "command": "renode.openMonitor",
+        "title": "Renode: Open Monitor"
+      },
+      {
         "command": "renode.openUartConsole",
         "title": "Renode: Open UART console"
       },

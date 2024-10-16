@@ -27,6 +27,31 @@ export function registerConsoleCommands(
     openLogsConsoleCommandHandler.bind({ logsPort: INITIAL_PORT }, pluginCtx),
   );
   subscriptions.push(logsCommand);
+
+  const monitorCommand = vscode.commands.registerCommand(
+    'renode.openMonitor',
+    () => openMonitorCommandHandler(INITIAL_PORT - 1, pluginCtx),
+  );
+  subscriptions.push(monitorCommand);
+}
+
+async function openMonitorCommandHandler(
+  monitorPort: number,
+  pluginCtx: RenodePluginContext,
+) {
+  if (!pluginCtx.socketReady) {
+    vscode.window.showErrorMessage('Renode not connected!');
+    return;
+  }
+
+  const term = createRenodeWebSocketTerminal(
+    'Renode Monitor',
+    `${pluginCtx.sessionBase}/telnet/${monitorPort}`,
+  );
+  term.show(false);
+  pluginCtx.onPreDisconnect(() => {
+    term.dispose();
+  });
 }
 
 async function openAllUartConsolesCommandHandler(
