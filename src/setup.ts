@@ -30,7 +30,7 @@ export class RenodeSetup {
 
   constructor(ctx: vscode.ExtensionContext) {
     this.storagePath = ctx.globalStorageUri;
-    // Platform specific paths
+    // Platform specific paths, vscode.Uri handles converting path separators
     if (process.platform === 'win32') {
       this.renodeBinPath = vscode.Uri.joinPath(
         this.storagePath,
@@ -236,6 +236,17 @@ export class RenodeSetup {
       // Working gdb found
       return defaultGDB;
     } else {
+      // On some systems with very new gdb versions (e.g. Arch Linux) gdb-multiarch is now just called gdb
+      // so check if that works and update default setting in that case
+      if (defaultGDB === 'gdb-multiarch') {
+        const res = spawnSync('gdb', ['--version'], {});
+        if (!res.error) {
+          // gdb works, when gdb-multiarch did not, so update setting
+          cfg.update('defaultGDB', 'gdb', vscode.ConfigurationTarget.Global);
+          return 'gdb';
+        }
+        // Else we just throw and inform the user that gdb is missing
+      }
       throw new Error(
         `${defaultGDB} not found, please set settings.renode.defaultGDB to to a valid value`,
         { cause: 'renode.defaultGDB' },
