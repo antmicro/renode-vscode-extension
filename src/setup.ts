@@ -12,29 +12,54 @@ import { spawnSync } from 'child_process';
 import { RenodePluginContext } from './context';
 const finished = promisify(stream.finished);
 
-const RENODE_URL =
+const RENODE_LINUX_URL =
   'https://builds.renode.io/renode-latest.linux-portable-dotnet.tar.gz';
+const RENODE_WINDOWS_URL =
+  'https://builds.renode.io/renode-latest.windows-portable-dotnet.zip';
 const WS_PROXY_URL = 'git+https://github.com/antmicro/renode-ws-proxy.git';
-const RENODE_ARCHIVE = 'renode-portable.tar.gz';
 
 export class RenodeSetup {
+  // Holds platform specific paths
   readonly storagePath: vscode.Uri;
+  readonly renodeArchivePath: vscode.Uri;
+  readonly renodeUrl: string;
+  readonly venvBinPath: vscode.Uri;
   private wsProxyBinPath: vscode.Uri;
   private renodeBinPath: vscode.Uri;
-  private renodeArchivePath: vscode.Uri;
   private defaultGDB: string;
 
   constructor(ctx: vscode.ExtensionContext) {
     this.storagePath = ctx.globalStorageUri;
-    this.renodeBinPath = vscode.Uri.joinPath(this.storagePath, 'renode');
-    this.renodeArchivePath = vscode.Uri.joinPath(
-      this.storagePath,
-      RENODE_ARCHIVE,
-    );
-    this.wsProxyBinPath = vscode.Uri.joinPath(
-      this.storagePath,
-      'venv/bin/renode-ws-proxy',
-    );
+    // Platform specific paths
+    if (process.platform === 'win32') {
+      this.renodeBinPath = vscode.Uri.joinPath(
+        this.storagePath,
+        '/bin/Renode.exe',
+      );
+      this.renodeArchivePath = vscode.Uri.joinPath(
+        this.storagePath,
+        'renode-latest.zip',
+      );
+      this.venvBinPath = vscode.Uri.joinPath(this.storagePath, 'venv/Scripts');
+      this.renodeUrl = RENODE_WINDOWS_URL;
+      this.wsProxyBinPath = vscode.Uri.joinPath(
+        this.venvBinPath,
+        'renode-ws-proxy.exe',
+      );
+    } else {
+      this.renodeBinPath = vscode.Uri.joinPath(this.storagePath, 'renode');
+      this.renodeArchivePath = vscode.Uri.joinPath(
+        this.storagePath,
+        'renode-portable-dotnet.tar.gz',
+      );
+      this.renodeUrl = RENODE_LINUX_URL;
+      this.venvBinPath = vscode.Uri.joinPath(this.storagePath, 'venv/bin');
+      this.wsProxyBinPath = vscode.Uri.joinPath(
+        this.venvBinPath,
+        'renode-ws-proxy',
+      );
+    }
+
     this.defaultGDB = 'gdb-multiarch';
   }
 
@@ -130,7 +155,7 @@ export class RenodeSetup {
           progress: vscode.Progress<any>,
           token: vscode.CancellationToken,
         ) => {
-          await downloadFile(RENODE_URL, this.renodeArchivePath.fsPath);
+          await downloadFile(this.renodeUrl, this.renodeArchivePath.fsPath);
         },
       );
       // Extract the portable release
@@ -181,12 +206,17 @@ export class RenodeSetup {
           progress: vscode.Progress<any>,
           token: vscode.CancellationToken,
         ) => {
-          spawnSync('python3', ['-m', 'venv', 'venv'], {
+          const venv_res = spawnSync('python', ['-m', 'venv', 'venv'], {
             cwd: this.storagePath.fsPath,
-            stdio: 'ignore',
+            stdio: 'pipe',
           });
+          if (venv_res.error) {
+            throw new Error(
+              'python not found, please make sure it is installed and in your PATH',
+            );
+          }
           spawnSync('./pip', ['install', WS_PROXY_URL], {
-            cwd: vscode.Uri.joinPath(this.storagePath, '/venv/bin').fsPath,
+            cwd: this.venvBinPath.fsPath,
             stdio: 'ignore',
           });
         },
