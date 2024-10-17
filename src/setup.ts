@@ -20,7 +20,7 @@ const WS_PROXY_URL = 'git+https://github.com/antmicro/renode-ws-proxy.git';
 
 export class RenodeSetup {
   // Holds platform specific paths
-  readonly storagePath: vscode.Uri;
+  readonly globalStoragePath: vscode.Uri;
   readonly renodeArchivePath: vscode.Uri;
   readonly renodeUrl: string;
   readonly venvBinPath: vscode.Uri;
@@ -29,31 +29,40 @@ export class RenodeSetup {
   private defaultGDB: string;
 
   constructor(ctx: vscode.ExtensionContext) {
-    this.storagePath = ctx.globalStorageUri;
+    this.globalStoragePath = ctx.globalStorageUri;
     // Platform specific paths, vscode.Uri handles converting path separators
     if (process.platform === 'win32') {
       this.renodeBinPath = vscode.Uri.joinPath(
-        this.storagePath,
-        '/bin/Renode.exe',
+        this.globalStoragePath,
+        'Renode.exe',
       );
       this.renodeArchivePath = vscode.Uri.joinPath(
-        this.storagePath,
+        this.globalStoragePath,
         'renode-latest.zip',
       );
-      this.venvBinPath = vscode.Uri.joinPath(this.storagePath, 'venv/Scripts');
+      this.venvBinPath = vscode.Uri.joinPath(
+        this.globalStoragePath,
+        'venv/Scripts',
+      );
       this.renodeUrl = RENODE_WINDOWS_URL;
       this.wsProxyBinPath = vscode.Uri.joinPath(
         this.venvBinPath,
         'renode-ws-proxy.exe',
       );
     } else {
-      this.renodeBinPath = vscode.Uri.joinPath(this.storagePath, 'renode');
+      this.renodeBinPath = vscode.Uri.joinPath(
+        this.globalStoragePath,
+        'renode',
+      );
       this.renodeArchivePath = vscode.Uri.joinPath(
-        this.storagePath,
+        this.globalStoragePath,
         'renode-portable-dotnet.tar.gz',
       );
       this.renodeUrl = RENODE_LINUX_URL;
-      this.venvBinPath = vscode.Uri.joinPath(this.storagePath, 'venv/bin');
+      this.venvBinPath = vscode.Uri.joinPath(
+        this.globalStoragePath,
+        'venv/bin',
+      );
       this.wsProxyBinPath = vscode.Uri.joinPath(
         this.venvBinPath,
         'renode-ws-proxy',
@@ -70,7 +79,7 @@ export class RenodeSetup {
       return { dispose: () => {} };
     }
     // Make sure the extensions globalStorage directory is created
-    await fs.mkdir(this.storagePath.fsPath, { recursive: true });
+    await fs.mkdir(this.globalStoragePath.fsPath, { recursive: true });
     // Find or download Renode and WS proxy
     const renode = this.getRenode();
     const wsProxy = this.getWSProxy();
@@ -112,7 +121,7 @@ export class RenodeSetup {
     const wsProxyProc: ChildProcess = childprocess.spawn(
       this.wsProxyBinPath.fsPath,
       [this.renodeBinPath.fsPath, '.', '-g', this.defaultGDB],
-      { cwd: this.storagePath.fsPath, stdio: 'pipe' },
+      { cwd: this.globalStoragePath.fsPath, stdio: 'pipe' },
     );
 
     wsProxyProc.stdout?.on('data', data => wsProxyOut.append(data.toString()));
@@ -171,7 +180,7 @@ export class RenodeSetup {
           spawnSync(
             'tar',
             ['--strip-components', '1', '-xf', this.renodeArchivePath.fsPath],
-            { cwd: this.storagePath.fsPath, stdio: 'ignore' },
+            { cwd: this.globalStoragePath.fsPath, stdio: 'ignore' },
           );
         },
       );
@@ -207,7 +216,7 @@ export class RenodeSetup {
           token: vscode.CancellationToken,
         ) => {
           const venv_res = spawnSync('python', ['-m', 'venv', 'venv'], {
-            cwd: this.storagePath.fsPath,
+            cwd: this.globalStoragePath.fsPath,
             stdio: 'pipe',
           });
           if (venv_res.error) {
