@@ -76,9 +76,12 @@ async function prepareTestContexts(polyfillPlugin) {
 
 async function main() {
   const polyfillPlugin = polyfillNode({});
-  const ctxMain = await esbuildContext('src/extension.ts', 'dist/extension.js');
+  const ctxMain = await esbuildContext(
+    'src/desktopExtension.ts',
+    'dist/extension.js',
+  );
   const ctxWeb = await esbuildContext(
-    'src/extension.ts',
+    'src/webExtension.ts',
     'dist/web.js',
     'browser',
     [polyfillPlugin],

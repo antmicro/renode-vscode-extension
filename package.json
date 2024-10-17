@@ -202,7 +202,7 @@
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
     "package": "pnpm run __build --production && pnpm run emit-types",
     "check-types": "tsc --noEmit",
-    "emit-types": "dts-bundle-generator -o dist/index.d.ts src/extension.ts",
+    "emit-types": "dts-bundle-generator -o dist/index.d.ts src/webExtension.ts",
     "lint": "pnpm run fmt && eslint src --ext ts",
     "lint:fix": "pnpm run fmt:fix && eslint src --ext ts --fix",
     "fmt": "prettier --check .",
