@@ -39,7 +39,7 @@ async function openMonitorCommandHandler(
   monitorPort: number,
   pluginCtx: RenodePluginContext,
 ) {
-  if (!pluginCtx.socketReady) {
+  if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
@@ -57,7 +57,7 @@ async function openMonitorCommandHandler(
 async function openAllUartConsolesCommandHandler(
   pluginCtx: RenodePluginContext,
 ) {
-  if (!pluginCtx.socketReady) {
+  if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
@@ -72,7 +72,7 @@ async function openAllUartConsolesCommandHandler(
 }
 
 async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
-  if (!pluginCtx.socketReady) {
+  if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
@@ -113,7 +113,7 @@ function openLogsConsoleCommandHandler(
   this: { logsPort: number },
   pluginCtx: RenodePluginContext,
 ) {
-  if (!pluginCtx.socketReady) {
+  if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
@@ -127,4 +127,8 @@ function openLogsConsoleCommandHandler(
   pluginCtx.onPreDisconnect(() => {
     term.dispose();
   });
+}
+
+function renodeRunning(pluginCtx: RenodePluginContext): boolean {
+  return pluginCtx.socketReady && pluginCtx.isDebugging;
 }
