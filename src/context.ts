@@ -4,8 +4,12 @@
 
 import * as vscode from 'vscode';
 import { RenodeFsProvider } from './fs';
-import { RenodeProxySession } from './common/connection';
-import { Sensor, SensorType, SensorValue } from './common/sensor';
+import {
+  RenodeProxySession,
+  Sensor,
+  SensorType,
+  SensorValue,
+} from 'renode-ws-proxy';
 import { createRenodeWebSocketTerminal } from './console';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';

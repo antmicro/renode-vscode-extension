@@ -8,7 +8,7 @@ import {
   SensorTypeFromString,
   GetSensorValue,
   SensorValue,
-} from '../common/sensor';
+} from 'renode-ws-proxy';
 
 export class SensorsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'sensors-info';

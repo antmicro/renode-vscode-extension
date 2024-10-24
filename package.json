@@ -218,7 +218,8 @@
   "dependencies": {
     "@vscode/debugadapter": "^1.66.0",
     "@vscode/debugprotocol": "^1.66.0",
-    "isomorphic-ws": "^5.0.0"
+    "isomorphic-ws": "^5.0.0",
+    "renode-ws-proxy": "antmicro/renode-ws-proxy"
   },
   "prettier": {
     "tabWidth": 2,

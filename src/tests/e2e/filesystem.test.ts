@@ -5,7 +5,7 @@
 import assert from 'assert';
 import vscode from 'vscode';
 import { Buffer } from 'buffer';
-import { RenodeProxySession } from '../../common/connection';
+import { RenodeProxySession } from 'renode-ws-proxy';
 
 // NOTE: For now, the tests share a single workspace.
 //       This means that when adding a new test you must
