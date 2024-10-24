@@ -104,8 +104,9 @@ suite('FileSystem Test Suite', function () {
       content,
     );
 
-    const remoteContent =
-      await testProxySession.downloadFile('/bar/baz/hello.txt');
+    const remoteContent = await testProxySession
+      .downloadFile('/bar/baz/hello.txt')
+      .then(Buffer.from);
     assert.deepStrictEqual(remoteContent, content);
   });
 
