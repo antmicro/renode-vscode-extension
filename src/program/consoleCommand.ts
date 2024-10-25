@@ -12,19 +12,18 @@ export function registerConsoleCommands(
 ) {
   const uartCommand = vscode.commands.registerCommand(
     'renode.openUartConsole',
-    openUartConsoleCommandHandler.bind(undefined, pluginCtx),
+    () => openUartConsoleCommandHandler(pluginCtx),
   );
   subscriptions.push(uartCommand);
 
   const allUartsCommand = vscode.commands.registerCommand(
     'renode.openAllUartConsoles',
-    openAllUartConsolesCommandHandler.bind(undefined, pluginCtx),
+    () => openAllUartConsolesCommandHandler(pluginCtx),
   );
   subscriptions.push(allUartsCommand);
 
-  const logsCommand = vscode.commands.registerCommand(
-    'renode.openLogs',
-    openLogsConsoleCommandHandler.bind({ logsPort: INITIAL_PORT }, pluginCtx),
+  const logsCommand = vscode.commands.registerCommand('renode.openLogs', () =>
+    openLogsConsoleCommandHandler(INITIAL_PORT, pluginCtx),
   );
   subscriptions.push(logsCommand);
 
@@ -110,7 +109,7 @@ async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
 }
 
 function openLogsConsoleCommandHandler(
-  this: { logsPort: number },
+  logsPort: number,
   pluginCtx: RenodePluginContext,
 ) {
   if (!renodeRunning(pluginCtx)) {
@@ -120,7 +119,7 @@ function openLogsConsoleCommandHandler(
 
   const term = createRenodeWebSocketTerminal(
     `Renode`,
-    `${pluginCtx.sessionBase}/telnet/${this.logsPort}`,
+    `${pluginCtx.sessionBase}/telnet/${logsPort}`,
     true,
   );
   term.show(false);

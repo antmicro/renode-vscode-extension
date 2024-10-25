@@ -82,18 +82,18 @@ export class MI2DebugSession extends DebugSession {
     if (!this.miDebugger) {
       throw new Error();
     }
-    this.miDebugger.on('launcherror', this.launchError.bind(this));
-    this.miDebugger.on('quit', this.quitEvent.bind(this));
-    this.miDebugger.on('exited-normally', this.quitEvent.bind(this));
-    this.miDebugger.on('stopped', this.stopEvent.bind(this));
-    this.miDebugger.on('msg', this.handleMsg.bind(this));
-    this.miDebugger.on('breakpoint', this.handleBreakpoint.bind(this));
-    this.miDebugger.on('watchpoint', this.handleBreak.bind(this)); // consider to parse old/new, too (otherwise it is in the console only)
-    this.miDebugger.on('step-end', this.handleBreak.bind(this));
-    this.miDebugger.on('step-other', this.handleBreak.bind(this));
-    this.miDebugger.on('signal-stop', this.handlePause.bind(this));
-    this.miDebugger.on('thread-created', this.threadCreatedEvent.bind(this));
-    this.miDebugger.on('thread-exited', this.threadExitedEvent.bind(this));
+    this.miDebugger.on('launcherror', ev => this.launchError(ev));
+    this.miDebugger.on('quit', () => this.quitEvent());
+    this.miDebugger.on('exited-normally', () => this.quitEvent());
+    this.miDebugger.on('stopped', ev => this.stopEvent(ev));
+    this.miDebugger.on('msg', (type, msg) => this.handleMsg(type, msg));
+    this.miDebugger.on('breakpoint', ev => this.handleBreakpoint(ev));
+    this.miDebugger.on('watchpoint', ev => this.handleBreak(ev)); // consider to parse old/new, too (otherwise it is in the console only)
+    this.miDebugger.on('step-end', ev => this.handleBreak(ev));
+    this.miDebugger.on('step-other', ev => this.handleBreak(ev));
+    this.miDebugger.on('signal-stop', ev => this.handlePause(ev));
+    this.miDebugger.on('thread-created', ev => this.threadCreatedEvent(ev));
+    this.miDebugger.on('thread-exited', ev => this.threadExitedEvent(ev));
     this.miDebugger.once('debug-ready', () =>
       this.sendEvent(new InitializedEvent()),
     );

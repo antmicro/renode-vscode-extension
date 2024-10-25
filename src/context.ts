@@ -40,15 +40,15 @@ export class RenodePluginContext {
 
     const connectCommand = vscode.commands.registerCommand(
       this.connectCommand,
-      this.connectCommandHandler.bind(this),
+      () => this.connectCommandHandler(),
     );
     const advancedConnectCommand = vscode.commands.registerCommand(
       this.advancedConnectCommand,
-      this.advancedConnectCommandHandler.bind(this),
+      () => this.advancedConnectCommandHandler(),
     );
     const disconnectCommand = vscode.commands.registerCommand(
       this.disconnectCommand,
-      this.disconnectCommandHandler.bind(this),
+      () => this.disconnectCommandHandler(),
     );
 
     this.status = vscode.window.createStatusBarItem(
