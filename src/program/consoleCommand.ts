@@ -9,6 +9,10 @@ export function registerConsoleCommands(
   subscriptions: any[],
   pluginCtx: RenodePluginContext,
 ) {
+  pluginCtx.onUartOpened(args => {
+    pluginCtx.createTerminal(`${args.name} (${args.machineName})`, args.port);
+  });
+
   const uartCommand = vscode.commands.registerCommand(
     'renode.openUartConsole',
     () => openUartConsoleCommandHandler(pluginCtx),
