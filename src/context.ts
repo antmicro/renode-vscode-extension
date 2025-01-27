@@ -9,6 +9,7 @@ import {
   Sensor,
   SensorType,
   SensorValue,
+  UartOpenedArgs,
 } from 'renode-ws-proxy';
 import { createRenodeWebSocketTerminal } from './console';
 
@@ -21,10 +22,12 @@ export class RenodePluginContext {
   // TODO: Remove once more than one debugging session is supported.
   public isDebugging = false;
   public onPreDisconnect: vscode.Event<RenodePluginContext>;
+  public onUartOpened: vscode.Event<UartOpenedArgs>;
 
   private currentSession?: RenodeProxySession;
   private status: vscode.StatusBarItem;
   private preDisconnectEmitter: vscode.EventEmitter<RenodePluginContext>;
+  private uartOpenedEmitter: vscode.EventEmitter<UartOpenedArgs>;
 
   private advancedConnectCommand = 'renode.advancedSessionConnect';
   private connectCommand = 'renode.sessionConnect';
@@ -36,7 +39,9 @@ export class RenodePluginContext {
 
   constructor() {
     this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
+    this.uartOpenedEmitter = new vscode.EventEmitter<UartOpenedArgs>();
     this.onPreDisconnect = this.preDisconnectEmitter.event;
+    this.onUartOpened = this.uartOpenedEmitter.event;
 
     const connectCommand = vscode.commands.registerCommand(
       this.connectCommand,
@@ -294,6 +299,9 @@ export class RenodePluginContext {
     this.currentSession.addEventListener('close', () => this.onClose());
 
     this.updateStatus();
+    this.currentSession.registerUartOpenedCallback(args =>
+      this.uartOpenedEmitter?.fire(args),
+    );
   }
 
   // *** Event handlers ***
