@@ -4,7 +4,6 @@
 
 import * as vscode from 'vscode';
 import { RenodePluginContext, INITIAL_PORT } from '../context';
-import { createRenodeWebSocketTerminal } from '../console';
 
 export function registerConsoleCommands(
   subscriptions: any[],
@@ -43,14 +42,7 @@ async function openMonitorCommandHandler(
     return;
   }
 
-  const term = createRenodeWebSocketTerminal(
-    'Renode Monitor',
-    `${pluginCtx.sessionBase}/telnet/${monitorPort}`,
-  );
-  term.show(false);
-  pluginCtx.onPreDisconnect(() => {
-    term.dispose();
-  });
+  pluginCtx.createTerminal('Renode Monitor', monitorPort);
 }
 
 async function openAllUartConsolesCommandHandler(
@@ -117,15 +109,7 @@ function openLogsConsoleCommandHandler(
     return;
   }
 
-  const term = createRenodeWebSocketTerminal(
-    `Renode`,
-    `${pluginCtx.sessionBase}/telnet/${logsPort}`,
-    true,
-  );
-  term.show(false);
-  pluginCtx.onPreDisconnect(() => {
-    term.dispose();
-  });
+  pluginCtx.createTerminal('Renode', logsPort, true);
 }
 
 function renodeRunning(pluginCtx: RenodePluginContext): boolean {

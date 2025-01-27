@@ -204,6 +204,23 @@ export class RenodePluginContext {
     return this.currentSession!.statFile(path);
   }
 
+  createTerminal(
+    name: string,
+    port: number,
+    readonly?: boolean,
+  ): vscode.Terminal {
+    const term = createRenodeWebSocketTerminal(
+      name,
+      `${this.sessionBase}/telnet/${port}`,
+      readonly,
+    );
+    term.show(false);
+    this.onPreDisconnect(() => {
+      term.dispose();
+    });
+    return term;
+  }
+
   async createUARTTerminal(
     machine: string,
     uart: string,
@@ -217,15 +234,7 @@ export class RenodePluginContext {
     ];
 
     await this.execMonitor(monitorCommands);
-    const term = createRenodeWebSocketTerminal(
-      `${uart} (${machine})`,
-      `${this.sessionBase}/telnet/${this.lastPort}`,
-    );
-    term.show(false);
-    this.onPreDisconnect(() => {
-      term.dispose();
-    });
-    return term;
+    return this.createTerminal(`${uart} (${machine})`, this.lastPort);
   }
 
   dispose() {
