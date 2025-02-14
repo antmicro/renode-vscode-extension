@@ -245,5 +245,15 @@
     "singleQuote": true,
     "trailingComma": "all",
     "arrowParens": "avoid"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@playwright/browser-chromium"
+    ],
+    "ignoredBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "esbuild",
+      "keytar"
+    ]
   }
 }
