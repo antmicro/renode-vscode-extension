@@ -1,0 +1,46 @@
+name: Build extension and release
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y curl
+          curl -fsSL https://get.pnpm.io/install.sh | bash -
+          export PNPM_HOME=$HOME/.local/share/pnpm
+          echo "PNPM_HOME=$PNPM_HOME" >> "$GITHUB_ENV"
+          echo "PATH=$PNPM_HOME:$PATH" >> "$GITHUB_ENV"
+
+      - name: Get version
+        id: get_version
+        shell: bash
+        run: |
+          VERSION=$(node -pe "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pnpm env use --global iron
+          pnpm install --frozen-lockfile
+
+      - name: Build extension
+        shell: bash
+        run: pnpm run v:pack
+
+      - name: Create Release
+        if: github.ref_name == 'main'
+        uses: ncipollo/release-action@v1
+        with:
+          skipIfReleaseExists: true
+          artifacts: renode-extension-*.vsix
+          tag: v${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          commit: ${{ github.sha }}
