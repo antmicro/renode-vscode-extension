@@ -12,7 +12,7 @@
     "url": "https://github.com/antmicro/renode-vscode-extension.git"
   },
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.99.0"
   },
   "categories": [
     "Other"
@@ -22,9 +22,6 @@
   ],
   "browser": "./dist/web.js",
   "main": "./dist/extension.js",
-  "files": [
-    "/dist"
-  ],
   "types": "dist/index.d.ts",
   "contributes": {
     "viewsContainers": {
@@ -212,32 +209,33 @@
     "v:pack": "vsce pack --pre-release --no-dependencies"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.7",
-    "@types/node": "20.x",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "~20.17.30",
     "@types/tmp": "^0.2.6",
-    "@types/vscode": "^1.91.0",
-    "@types/ws": "^8.5.11",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.11.0",
+    "@types/vscode": "^1.99.1",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0",
+    "@vscode/test-electron": "^2.5.1",
     "@vscode/test-web": "^0.0.60",
-    "@vscode/vsce": "^2.30.0",
+    "@vscode/vsce": "^2.32.0",
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.21.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",
-    "eslint": "^8.57.0",
-    "glob": "^11.0.0",
-    "mocha": "^10.7.3",
+    "eslint": "^8.57.1",
+    "glob": "^11.0.1",
+    "mocha": "^10.8.2",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.3.3",
-    "typescript": "^5.4.5"
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@vscode/debugadapter": "^1.66.0",
-    "@vscode/debugprotocol": "^1.66.0",
+    "@vscode/debugadapter": "^1.68.0",
+    "@vscode/debugprotocol": "^1.68.0",
     "isomorphic-ws": "^5.0.0",
-    "renode-ws-proxy": "antmicro/renode-ws-proxy"
+    "pnpm": "^10.8.0",
+    "renode-ws-proxy": "github:antmicro/renode-ws-proxy"
   },
   "prettier": {
     "tabWidth": 2,
