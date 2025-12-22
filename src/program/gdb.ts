@@ -48,6 +48,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   private terminals: vscode.Terminal[] = [];
   private renodeStarted = false;
   private disposables: vscode.Disposable[] = [];
+  private interruptedLaunch: boolean = false;
 
   constructor(
     private pluginCtx: RenodePluginContext,
@@ -185,7 +186,13 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     args: LaunchRequestArguments,
   ) {
     try {
+      // If this value changed to true during the launch sequence it means the debugger got a request to terminate, which we should follow
+      this.interruptedLaunch = false;
       await this.launchRequestInner(args);
+      if (this.interruptedLaunch) {
+        await this.disconnect();
+        throw Error('Launch interrupted');
+      }
       this.sendResponse(response);
     } catch (e: any) {
       let err = e.message ?? e.toString();
@@ -199,6 +206,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments,
   ): Promise<void> {
+    this.interruptedLaunch = true;
     await this.disconnect();
     this.sendResponse(response);
   }
@@ -249,6 +257,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   }
 
   protected terminateSession() {
+    this.interruptedLaunch = true;
     this.sendEvent(new TerminatedEvent());
   }
 
