@@ -47,16 +47,12 @@
       "properties": {
         "renode.customRenodePath": {
           "type": "string",
-          "description": "Use Renode binary located at this path instead of extensions own. Note that only dotnet portable Renode is supported at this time"
+          "description": "Use Renode binary located at this path instead of extensions own."
         },
-        "renode.customWSProxyPath": {
-          "type": "string",
-          "description": "Use Renode WS Proxy located at this path instead of extensions own"
-        },
-        "renode.automaticWSProxyManagement": {
+        "renode.autoStartRenode": {
           "type": "boolean",
           "default": "true",
-          "description": "When enabled, the extension will manage starting Renode WS Proxy. Disable if running WS proxy manually"
+          "description": "When enabled, the extension will manage starting Renode. Disable if running Renode manually"
         },
         "renode.defaultGDB": {
           "type": "string",
@@ -66,7 +62,7 @@
         "renode.defaultSessionUri": {
           "type": "string",
           "default": "ws://127.0.0.1:21234",
-          "description": "Default base Uri for ws-proxy session"
+          "description": "Default base Uri for Renode session"
         },
         "renode.workspace": {
           "type": "string",
@@ -235,7 +231,7 @@
     "@vscode/debugprotocol": "^1.68.0",
     "isomorphic-ws": "^5.0.0",
     "pnpm": "^10.8.0",
-    "renode-ws-proxy": "github:antmicro/renode-ws-proxy"
+    "renode-ws-api": "https://builds.renode.io/api/renode-ws-api+20260121git19e52baf2.ts.tgz"
   },
   "prettier": {
     "tabWidth": 2,
@@ -246,8 +242,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@playwright/browser-chromium",
-      "renode-ws-proxy"
+      "@playwright/browser-chromium"
     ],
     "ignoredBuiltDependencies": [
       "@vscode/vsce-sign",

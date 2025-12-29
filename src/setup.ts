@@ -1,30 +1,25 @@
-// Copyright (c) 2025 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import stream, { Readable } from 'stream';
 import childprocess, { ChildProcess } from 'child_process';
 import { promisify } from 'util';
 import { spawnSync } from 'child_process';
-import { RenodePluginContext } from './context';
 const finished = promisify(stream.finished);
 
 const RENODE_LINUX_URL =
   'https://builds.renode.io/renode-latest.linux-portable-dotnet.tar.gz';
 const RENODE_WINDOWS_URL =
   'https://builds.renode.io/renode-latest.windows-portable-dotnet.zip';
-const WS_PROXY_URL = 'git+https://github.com/antmicro/renode-ws-proxy.git';
 
 export class RenodeSetup {
   // Holds platform specific paths
   readonly globalStoragePath: vscode.Uri;
   readonly renodeArchivePath: vscode.Uri;
   readonly renodeUrl: string;
-  readonly venvBinPath: vscode.Uri;
-  private wsProxyBinPath: vscode.Uri;
   private renodeBinPath: vscode.Uri;
   private defaultGDB: string;
 
@@ -40,15 +35,7 @@ export class RenodeSetup {
         this.globalStoragePath,
         'renode-latest.zip',
       );
-      this.venvBinPath = vscode.Uri.joinPath(
-        this.globalStoragePath,
-        'venv/Scripts',
-      );
       this.renodeUrl = RENODE_WINDOWS_URL;
-      this.wsProxyBinPath = vscode.Uri.joinPath(
-        this.venvBinPath,
-        'renode-ws-proxy.exe',
-      );
     } else {
       this.renodeBinPath = vscode.Uri.joinPath(
         this.globalStoragePath,
@@ -59,14 +46,6 @@ export class RenodeSetup {
         'renode-portable-dotnet.tar.gz',
       );
       this.renodeUrl = RENODE_LINUX_URL;
-      this.venvBinPath = vscode.Uri.joinPath(
-        this.globalStoragePath,
-        'venv/bin',
-      );
-      this.wsProxyBinPath = vscode.Uri.joinPath(
-        this.venvBinPath,
-        'renode-ws-proxy',
-      );
     }
 
     this.defaultGDB = 'gdb-multiarch';
@@ -74,20 +53,19 @@ export class RenodeSetup {
 
   async setup(): Promise<vscode.Disposable> {
     const cfg = vscode.workspace.getConfiguration('renode');
-    if (!cfg?.get<boolean>('automaticWSProxyManagement')) {
-      // Automatic proxy manegement is disbled, so nothing needs to be done here
+    if (!cfg?.get<boolean>('autoStartRenode')) {
+      // Automatic renode management is disabled, so nothing needs to be done here
       return { dispose: () => {} };
     }
     // Make sure the extensions globalStorage directory is created
     await fs.mkdir(this.globalStoragePath.fsPath, { recursive: true });
-    // Find or download Renode and WS proxy
+    // Find or download Renode
     const renode = this.getRenode();
-    const wsProxy = this.getWSProxy();
     const defaultGDB = this.getDefaultGDB();
 
     try {
       // Wait for dependancies to be ready
-      await Promise.all([renode, wsProxy, defaultGDB]);
+      await Promise.all([renode, defaultGDB]);
     } catch (error) {
       if (error instanceof Error) {
         const settings_message = 'Open extension settings';
@@ -113,24 +91,18 @@ export class RenodeSetup {
 
     // All requirements are now located, and already awaited
     this.renodeBinPath = await renode;
-    this.wsProxyBinPath = await wsProxy;
     this.defaultGDB = await defaultGDB;
 
-    const wsProxyOut = vscode.window.createOutputChannel('Renode WS Proxy');
-
-    const wsProxyProc: ChildProcess = childprocess.spawn(
-      this.wsProxyBinPath.fsPath,
-      [this.renodeBinPath.fsPath, '.', '-g', this.defaultGDB],
-      { cwd: this.globalStoragePath.fsPath, stdio: 'pipe' },
+    const renodeProc: ChildProcess = childprocess.spawn(
+      this.renodeBinPath.fsPath,
+      ['--server-mode'],
+      { cwd: this.globalStoragePath.fsPath },
     );
 
-    wsProxyProc.stdout?.on('data', data => wsProxyOut.append(data.toString()));
-    wsProxyProc.stderr?.on('data', data => wsProxyOut.append(data.toString()));
-
-    // Anything that needs to be cleaned up on exit (i.e. killing ws-proxy) goes here
+    // Anything that needs to be cleaned up on exit (i.e. killing renode) goes here
     return {
       dispose: async () => {
-        wsProxyProc?.kill();
+        renodeProc?.kill();
       },
     };
   }
@@ -185,52 +157,6 @@ export class RenodeSetup {
         },
       );
       return renodePath;
-    }
-  }
-
-  async getWSProxy(): Promise<vscode.Uri> {
-    let wsProxyPath = this.wsProxyBinPath;
-
-    const cfg = vscode.workspace.getConfiguration('renode');
-    const customWSPath = cfg?.get<string>('customWSProxyPath');
-    if (customWSPath) {
-      wsProxyPath = vscode.Uri.parse(customWSPath);
-    }
-    const res = spawnSync(wsProxyPath.fsPath, ['-h'], {});
-    if (!res.error) {
-      // Working WS Proxy found
-      return wsProxyPath;
-    } else {
-      if (customWSPath) {
-        // User specified a wrong path, so throw an error
-        throw new Error(`Could not find Renode WS Proxy at ${wsProxyPath}`);
-      }
-      // Download WS Proxy
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: 'Renode WebSocket Proxy not found, downloading',
-        },
-        async (
-          progress: vscode.Progress<any>,
-          token: vscode.CancellationToken,
-        ) => {
-          const venv_res = spawnSync('python', ['-m', 'venv', 'venv'], {
-            cwd: this.globalStoragePath.fsPath,
-            stdio: 'pipe',
-          });
-          if (venv_res.error) {
-            throw new Error(
-              'python not found, please make sure it is installed and in your PATH',
-            );
-          }
-          spawnSync('./pip', ['install', WS_PROXY_URL], {
-            cwd: this.venvBinPath.fsPath,
-            stdio: 'ignore',
-          });
-        },
-      );
-      return wsProxyPath;
     }
   }
 

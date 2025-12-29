@@ -1,11 +1,11 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import assert from 'assert';
 import vscode from 'vscode';
 import { Buffer } from 'buffer';
-import { RenodeProxySession } from 'renode-ws-proxy';
+import { RenodeProxySession } from 'renode-ws-api';
 
 // NOTE: For now, the tests share a single workspace.
 //       This means that when adding a new test you must

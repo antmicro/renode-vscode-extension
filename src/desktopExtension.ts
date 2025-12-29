@@ -1,10 +1,10 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import * as vscode from 'vscode';
 import * as utils from './utils';
-import { LaunchRequestArguments, RenodeGdbDebugSession } from './program/gdb';
+import { LaunchRequestArguments } from './program/gdb';
 import { activateExtension } from './extensionActivate';
 import { RenodeSetup } from './setup';
 import { setTimeout } from 'timers/promises';

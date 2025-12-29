@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,7 +10,7 @@ import { RenodeWebSocketPseudoTerminal } from '../console';
 import { RenodePluginContext } from '../context';
 import { URL } from 'url';
 import path from 'path';
-import { DebugSession, TerminatedEvent } from '@vscode/debugadapter';
+import { TerminatedEvent } from '@vscode/debugadapter';
 
 function randomPort(): number {
   const min = 10_000;

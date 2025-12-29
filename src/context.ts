@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,7 +10,7 @@ import {
   SensorType,
   SensorValue,
   UartOpenedArgs,
-} from 'renode-ws-proxy';
+} from 'renode-ws-api';
 import { createRenodeWebSocketTerminal } from './console';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';

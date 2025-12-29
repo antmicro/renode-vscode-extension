@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,7 +8,7 @@ import {
   SensorTypeFromString,
   GetSensorValue,
   SensorValue,
-} from 'renode-ws-proxy';
+} from 'renode-ws-api';
 
 export class SensorsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'sensors-info';

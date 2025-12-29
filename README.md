@@ -14,8 +14,6 @@ Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [
 
 You need to already have [Renode](https://github.com/renode/renode) and gdb, for architecture you're planning to debug, installed.
 
-Additionally this extension requires [Renode WebSocket Proxy](https://github.com/antmicro/renode-ws-proxy), which manages your debug session and allows for remote connection.
-
 ## Building and installation
 
 To build the extension, use `pnpm`:
