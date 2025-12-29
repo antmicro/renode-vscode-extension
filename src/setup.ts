@@ -93,16 +93,29 @@ export class RenodeSetup {
     this.renodeBinPath = await renode;
     this.defaultGDB = await defaultGDB;
 
+    var spawnOptions: childprocess.SpawnOptionsWithoutStdio = {
+      cwd: this.globalStoragePath.fsPath,
+    };
+    if (process.platform !== 'win32') {
+      spawnOptions.detached = true; // Required to kill whole process group on Unix systems
+    }
+
     const renodeProc: ChildProcess = childprocess.spawn(
       this.renodeBinPath.fsPath,
       ['--server-mode'],
-      { cwd: this.globalStoragePath.fsPath },
+      spawnOptions,
     );
 
     // Anything that needs to be cleaned up on exit (i.e. killing renode) goes here
     return {
       dispose: async () => {
-        renodeProc?.kill();
+        if (renodeProc !== undefined) {
+          if (process.platform === 'win32') {
+            renodeProc.kill();
+          } else {
+            process.kill(-renodeProc.pid!); // Kills the whole process group that process with pid belongs to
+          }
+        }
       },
     };
   }
