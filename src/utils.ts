@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -53,4 +53,8 @@ export function assert(condition: any, msg?: string): asserts condition {
   if (!condition) {
     throw new Error(msg);
   }
+}
+
+export async function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

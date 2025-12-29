@@ -12,6 +12,7 @@ import {
   UartOpenedArgs,
 } from 'renode-ws-api';
 import { createRenodeWebSocketTerminal } from './console';
+import { delay } from './utils';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';
 
@@ -293,14 +294,27 @@ export class RenodePluginContext {
     this.disconnectCommandHandler();
     const cfg = vscode.workspace.getConfiguration('renode');
     const workspace = cfg?.get<string>('workspace');
-    this.currentSession = await RenodeProxySession.tryConnect(
-      wsUri,
-      workspace ?? '',
-    );
-    this.currentSession.addEventListener('close', () => this.onClose());
 
+    const retryNumber = 5;
+    const delayTime = 1000;
+
+    // Connect with retry
+    for (let i = 0; i < retryNumber; i++) {
+      try {
+        this.currentSession = await RenodeProxySession.tryConnect(
+          // If connection fails, error will be caught and connecting will be retried again after delay
+          wsUri,
+          workspace ?? '',
+        );
+        break; // Will reach this break if connection succeeds
+      } catch (e) {
+        await delay(delayTime);
+      }
+    }
+
+    this.currentSession?.addEventListener('close', () => this.onClose());
     this.updateStatus();
-    this.currentSession.registerUartOpenedCallback(args =>
+    this.currentSession?.registerUartOpenedCallback(args =>
       this.uartOpenedEmitter?.fire(args),
     );
   }
