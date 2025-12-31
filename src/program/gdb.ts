@@ -46,10 +46,11 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   private mappings: [string, string][] = [];
   private terminals: vscode.Terminal[] = [];
   private renodeStarted = false;
+  private disposables: vscode.Disposable[] = [];
 
   constructor(private pluginCtx: RenodePluginContext) {
     super(false, false);
-    pluginCtx.onPreDisconnect(() => this.disconnect());
+    pluginCtx.onPreDisconnect(this.disconnect, this, this.disposables);
   }
 
   protected override initializeRequest(
@@ -322,5 +323,11 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.renodeStarted = false;
     this.pluginCtx.isDebugging = false;
+  }
+
+  public dispose() {
+    for (const disposable of this.disposables) {
+      disposable.dispose();
+    }
   }
 }

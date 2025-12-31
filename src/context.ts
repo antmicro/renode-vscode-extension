@@ -220,8 +220,9 @@ export class RenodePluginContext {
       readonly,
     );
     term.show(false);
-    this.onPreDisconnect(() => {
+    let disposable = this.onPreDisconnect(() => {
       term.dispose();
+      disposable.dispose();
     });
     return term;
   }
