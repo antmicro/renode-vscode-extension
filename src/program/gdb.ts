@@ -10,6 +10,7 @@ import { RenodeWebSocketPseudoTerminal } from '../console';
 import { RenodePluginContext } from '../context';
 import { URL } from 'url';
 import path from 'path';
+import { DebugSession, TerminatedEvent } from '@vscode/debugadapter';
 
 function randomPort(): number {
   const min = 10_000;
@@ -48,9 +49,30 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   private renodeStarted = false;
   private disposables: vscode.Disposable[] = [];
 
-  constructor(private pluginCtx: RenodePluginContext) {
+  constructor(
+    private pluginCtx: RenodePluginContext,
+    private session: vscode.DebugSession,
+  ) {
     super(false, false);
+    vscode.debug.onDidReceiveDebugSessionCustomEvent(
+      this.processCustomEvents,
+      this,
+      this.disposables,
+    );
+
     pluginCtx.onPreDisconnect(this.disconnect, this, this.disposables);
+  }
+
+  private processCustomEvents(event: vscode.DebugSessionCustomEvent) {
+    switch (event.event) {
+      case 'renode-parent-terminates': // Used for terminating Renode debugger by parent debugger
+        if (event.session.id === this.session.parentSession?.id) {
+          this.terminateSession();
+        }
+        break;
+      default: // Do nothing after receiving unknown event
+        break;
+    }
   }
 
   protected override initializeRequest(
@@ -224,6 +246,10 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
         this.sendErrorResponse(response, 114, `Read memory error: ${err}`);
       },
     );
+  }
+
+  protected terminateSession() {
+    this.sendEvent(new TerminatedEvent());
   }
 
   protected override convertClientPathToDebugger(clientPath: string): string {

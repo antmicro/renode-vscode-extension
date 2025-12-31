@@ -20,9 +20,9 @@ export function activateExtension(context: vscode.ExtensionContext) {
   const adapterDisposable = vscode.debug.registerDebugAdapterDescriptorFactory(
     'renodegdb',
     {
-      async createDebugAdapterDescriptor(_session, _executable) {
+      async createDebugAdapterDescriptor(session, _executable) {
         return new vscode.DebugAdapterInlineImplementation(
-          new RenodeGdbDebugSession(ctx),
+          new RenodeGdbDebugSession(ctx, session),
         );
       },
     },
