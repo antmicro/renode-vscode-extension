@@ -176,36 +176,42 @@ export class SensorsViewProvider implements vscode.WebviewViewProvider {
 
   public loadSensorsData() {
     if (!this.renodeCtx.isDebugging) {
-      this._view!.webview.html = `
-        <style>${this.webviewStyles}</style>
-        <h1>Sensors Data</h1>
-        </br>
-        <p>Renode simulation is not running!</p>
-      `;
+      if (this._view !== undefined) {
+        this._view.webview.html = `
+          <style>${this.webviewStyles}</style>
+          <h1>Sensors Data</h1>
+          </br>
+          <p>Renode simulation is not running!</p>
+        `;
+      }
     } else {
       this.getSensorsValues()
         .then(values => {
-          if (values.length === 0) {
-            this._view!.webview.html = `
-              <style>${this.webviewStyles}</style>
-              <h1>Sensors Data</h1>
-              </br>
-              <p>No sensors available!</p>
-            `;
-          } else {
-            this._view!.webview.html = this.getHtmlForWebview(values);
+          if (this._view !== undefined) {
+            if (values.length === 0) {
+              this._view.webview.html = `
+                <style>${this.webviewStyles}</style>
+                <h1>Sensors Data</h1>
+                </br>
+                <p>No sensors available!</p>
+              `;
+            } else {
+              this._view.webview.html = this.getHtmlForWebview(values);
+            }
           }
         })
         .catch(error => {
           console.error('Failed to load sensor values:', error);
-          this._view!.webview.html = `
-            <style>${this.webviewStyles}</style>
-            <script>${this.webviewScript}</script>
-            <h1>Sensors Data</h1>
-            </br>
-            <p>Error loading sensor data: ${error}</p>
-            <button class="vscode-button" onclick="refresh()">Refresh All</button>
-          `;
+          if (this._view !== undefined) {
+            this._view.webview.html = `
+              <style>${this.webviewStyles}</style>
+              <script>${this.webviewScript}</script>
+              <h1>Sensors Data</h1>
+              </br>
+              <p>Error loading sensor data: ${error}</p>
+              <button class="vscode-button" onclick="refresh()">Refresh All</button>
+            `;
+          }
         });
     }
   }
