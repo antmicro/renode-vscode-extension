@@ -60,7 +60,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     response.body.supportsDisassembleRequest = true;
     response.body.supportsReadMemoryRequest = true;
     response.body.supportsGotoTargetsRequest = true;
-    response.body.supportsTerminateRequest = true;
     response.body.supportsHitConditionalBreakpoints = true;
     response.body.supportsConfigurationDoneRequest = true;
     response.body.supportsConditionalBreakpoints = true;
@@ -171,13 +170,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       this.sendErrorResponse(response, 103, err);
       this.pluginCtx.isDebugging = false;
     }
-  }
-
-  protected override terminateRequest(
-    response: DebugProtocol.TerminateResponse,
-    args: DebugProtocol.TerminateArguments,
-  ): Promise<void> {
-    return this.disconnectRequest(response, args);
   }
 
   protected override async disconnectRequest(
@@ -314,8 +306,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     }
     this.output?.dispose();
 
-    this.miDebugger?.detach();
-
     if (this.renodeStarted) {
       vscode.window.showInformationMessage('Stopping Renode');
       await this.pluginCtx
@@ -327,6 +317,9 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
           vscode.window.showErrorMessage('Renode did not stop');
         });
     }
+
+    this.miDebugger?.detach();
+
     this.renodeStarted = false;
     this.pluginCtx.isDebugging = false;
   }
