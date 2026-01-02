@@ -246,7 +246,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@playwright/browser-chromium"
+      "@playwright/browser-chromium",
+      "renode-ws-proxy"
     ],
     "ignoredBuiltDependencies": [
       "@vscode/vsce-sign",
