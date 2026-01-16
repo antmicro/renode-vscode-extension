@@ -181,6 +181,7 @@ async function main() {
       extensionTestsPath,
       browserOptions: localBrowser ? ['--headless=new'] : [],
       folderPath: workdir,
+      quality: 'stable',
     });
   } catch (e) {
     throw e;
