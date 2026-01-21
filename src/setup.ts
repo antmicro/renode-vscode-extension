@@ -65,7 +65,7 @@ export class RenodeSetup {
     const defaultGDB = this.getDefaultGDB();
 
     try {
-      // Wait for dependancies to be ready
+      // Wait for dependencies to be ready
       await Promise.all([renode, defaultGDB]);
     } catch (error) {
       if (error instanceof Error) {
@@ -86,7 +86,7 @@ export class RenodeSetup {
           `Unexpected error in RenodeSetup: ${String(error)}`,
         );
       }
-      // One or more components not avaible, so setup can't procede
+      // One or more components not available, so setup can't proceed
       return { dispose: () => {} };
     }
 

@@ -67,7 +67,7 @@
         "renode.workspace": {
           "type": "string",
           "default": "workspace",
-          "description": "subdirectory this instance will connect to"
+          "description": "Subdirectory this instance will connect to"
         }
       }
     },
