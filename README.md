@@ -1,6 +1,6 @@
 # Renode VSCode Extension
 
-Copyright (c) 2024 [Antmicro](https://antmicro.com)
+Copyright (c) 2026 [Antmicro](https://antmicro.com)
 
 Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [Theia](https://theia-ide.org), allowing users to easily integrate with [Renode](https://renode.io), an open source simulation framework for embedded systems.
 
