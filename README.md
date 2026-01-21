@@ -47,8 +47,8 @@ Here is the sample configuration file you can place in `.vscode/launch.json` or 
 
       "cwd": "${workspaceFolder}",
       "terminals": [
-        "ws://127.0.0.1:21234/telnet/29170", // Monitor
-        "ws://127.0.0.1:21234/telnet/29171" // Log
+        "ws://127.0.0.1:21234/telnet/29169", // Monitor
+        "ws://127.0.0.1:21234/telnet/29170" // Log
       ]
     }
   ]
