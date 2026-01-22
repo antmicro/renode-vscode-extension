@@ -90,10 +90,10 @@ export class RenodePluginContext {
     return this.currentSession?.socketReady ?? false;
   }
 
-  async startRenode(cwd?: string) {
+  async startRenode() {
     await this.connectGuard();
 
-    await this.currentSession!.startRenode(cwd);
+    await this.currentSession!.startRenode();
 
     this.isDebugging = true;
   }

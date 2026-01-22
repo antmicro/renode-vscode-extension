@@ -60,8 +60,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       this,
       this.disposables,
     );
-
-    pluginCtx.onPreDisconnect(this.disconnect, this, this.disposables);
   }
 
   private processCustomEvents(event: vscode.DebugSessionCustomEvent) {
@@ -117,6 +115,22 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     let monitorCommands = args.extraMonitorCommands ?? [];
 
+    // This is where connection to server happens if it wasn't established before
+    await this.pluginCtx.startRenode().catch(() => {
+      throw new Error('Renode did not start');
+    });
+
+    // Disconnect handling needs to be added after we ensured that connection is established
+    this.pluginCtx.onPreDisconnect(
+      this.terminateSession,
+      this,
+      this.disposables,
+    );
+
+    this.terminals = await Promise.all(
+      this.handleTerminals(args.terminals ?? []),
+    );
+
     if (args.resc) {
       let resc = args.resc;
       if (isRemote) {
@@ -150,12 +164,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
     ];
 
-    await this.pluginCtx
-      .startRenode(isRemote ? undefined : args.cwd)
-      .catch(() => {
-        throw new Error('Renode did not start');
-      });
-
     await this.pluginCtx.execMonitor(monitorCommands).catch(() => {
       throw new Error('Renode did not execute initial commands');
     });
@@ -175,10 +183,6 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       .catch(err => {
         throw new Error(`Failed to load debugger: ${err}`);
       });
-
-    this.terminals = await Promise.all(
-      this.handleTerminals(args.terminals ?? []),
-    );
   }
 
   protected override async launchRequest(
@@ -190,7 +194,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       this.interruptedLaunch = false;
       await this.launchRequestInner(args);
       if (this.interruptedLaunch) {
-        await this.disconnect();
+        await this.disconnect(); // Run disconnect again to make sure we cleaned up everything
         throw Error('Launch interrupted');
       }
       this.sendResponse(response);
