@@ -6,7 +6,7 @@ import { DebugProtocol } from '@vscode/debugprotocol';
 import { MI2DebugSession, RunCommand } from '../code-debug/mibase';
 import { MI2 } from '../code-debug/backend/mi2/mi2';
 import * as vscode from 'vscode';
-import { RenodeWebSocketPseudoTerminal } from '../console';
+import { createRenodeWebSocketTerminal } from '../console';
 import { RenodePluginContext } from '../context';
 import { URL } from 'url';
 import path from 'path';
@@ -289,17 +289,14 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     super.sendResponse(response);
   }
 
-  private handleUrlTerminal(
+  private async handleUrlTerminal(
     terminal: string,
     id: number,
   ): Promise<vscode.Terminal> {
     const name = `Terminal ${id}`;
-    const res = vscode.window.createTerminal({
-      name,
-      pty: new RenodeWebSocketPseudoTerminal(name, terminal),
-    });
+    const res = createRenodeWebSocketTerminal(name, terminal);
     res.show(false);
-    return new Promise((resolve, reject) => resolve(res));
+    return res;
   }
 
   private async handleNamedUartTerminal(

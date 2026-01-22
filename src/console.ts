@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Antmicro <www.antmicro.com>
+// Copyright (c) 2026 Antmicro <www.antmicro.com>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -16,19 +16,21 @@ export function createRenodeWebSocketTerminal(
   });
 }
 
-export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
+class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
   onDidChangeName?: vscode.Event<string> | undefined;
   onDidClose?: vscode.Event<number | void> | undefined;
   onDidOverrideDimensions?:
     | vscode.Event<vscode.TerminalDimensions | undefined>
     | undefined;
   onDidWrite: vscode.Event<string>;
-  name: string;
+  readonly name: string;
+  address: string;
 
   constructor(name: string, address: string, readonly?: boolean) {
     this.isActive = false;
     this.readonly = readonly ?? false;
     this.name = name;
+    this.address = address;
 
     this.changeNameEmitter = new vscode.EventEmitter<string>();
     this.closeEmitter = new vscode.EventEmitter<number | void>();
@@ -40,13 +42,10 @@ export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
     this.onDidClose = this.closeEmitter.event;
     this.onDidOverrideDimensions = this.overrideDimensionsEmitter.event;
     this.onDidWrite = this.writeEmitter.event;
+  }
 
-    this.ws = new WebSocket(address);
-
-    this.ws.addEventListener('open', () => {
-      this.isActive = true;
-      this.changeNameEmitter.fire(this.name);
-    });
+  async connect(): Promise<void> {
+    this.ws = new WebSocket(this.address);
 
     this.ws.addEventListener('close', () => {
       this.isActive = false;
@@ -57,10 +56,19 @@ export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
     this.ws.addEventListener('message', ev => {
       this.writeEmitter.fire(ev.data.toString());
     });
+
+    return new Promise(resolve => {
+      this.ws!.addEventListener('open', () => {
+        this.isActive = true;
+        this.changeNameEmitter.fire(this.name);
+        resolve();
+      });
+    });
   }
 
   close(): void {
-    this.ws.close();
+    this.ws?.close();
+    this.ws = undefined;
   }
 
   handleInput(data: string): void {
@@ -68,13 +76,14 @@ export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
       return;
     }
 
-    this.ws.send(data);
+    this.ws?.send(data);
   }
 
   open(initialDimensions: vscode.TerminalDimensions | undefined): void {
     this.changeNameEmitter.fire(
       this.isActive ? this.name : 'waiting for connection',
     );
+    this.connect();
   }
 
   setDimensions(dimensions: vscode.TerminalDimensions): void {}
@@ -86,5 +95,5 @@ export class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
 
   private isActive: boolean;
   private readonly: boolean;
-  private ws: WebSocket;
+  private ws?: WebSocket;
 }
