@@ -1,43 +1,7 @@
-stages:
-  - build
-  - test
+variables:
+  RENODE_COMMIT: 'master'
 
-.common: &common
-  image: 'node:20.17.0-bookworm'
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == "main"
-      - $CI_PIPELINE_SOURCE == "merge_request"
-  before_script:
-    - npm install -g pnpm
-    - pnpm config set store-dir ~/.pnpm-store
-
-build:
-  stage: build
-  <<: *common
-  artifacts:
-    paths:
-      - artifacts/
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm v:pack
-    - mkdir -p artifacts
-    - mv *.vsix artifacts/
-    - pnpm compile:all
-    - mv dist artifacts/
-    - mv out artifacts/
-
-test:
-  stage: test
-  <<: *common
-  script:
-    - mv artifacts/{dist,out} ./
-    - wget https://builds.renode.io/renode-latest.linux-portable-dotnet.tar.gz
-    - mkdir renode-portable
-    - tar -xf renode-latest.linux-portable-dotnet.tar.gz --strip-components=1 -C renode-portable
-    - export RENODE_PATH=$(readlink -f renode-portable)/renode
-    - pnpm install --frozen-lockfile
-    - pnpx playwright install-deps
-    - apt-get install -y python3 python3-pip python3-venv gdb-multiarch
-    - python3 -m venv .venv && source .venv/bin/activate
-    - pnpm run test:prebuilt
+include:
+  - project: repositories/renode-theia-ci
+    ref: main
+    file: ci.yml
