@@ -11,10 +11,14 @@ import { RenodeSetup } from './setup';
 // Entry point for the desktop version of the extension
 export async function activate(context: vscode.ExtensionContext) {
   activateExtension(context);
+
   // Logic specific to the desktop version goes here
   let setup = new RenodeSetup(context);
   setup.setup().then(disposable => {
     context.subscriptions.push(disposable);
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration(setup.settingsChange, setup),
+    );
 
     vscode.commands.executeCommand('renode.sessionConnect');
   });

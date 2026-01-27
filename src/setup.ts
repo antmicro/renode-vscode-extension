@@ -22,6 +22,7 @@ export class RenodeSetup {
   readonly renodeUrl: string;
   private renodeBinPath: vscode.Uri;
   private defaultGDB: string;
+  private renodeProc?: ChildProcess;
 
   constructor(ctx: vscode.ExtensionContext) {
     this.globalStoragePath = ctx.globalStorageUri;
@@ -97,10 +98,10 @@ export class RenodeSetup {
       cwd: this.globalStoragePath.fsPath,
     };
     if (process.platform !== 'win32') {
-      spawnOptions.detached = true; // Required to kill whole process group on Unix systems
+      spawnOptions.detached = true; // Separates spawned program into separate group
     }
 
-    const renodeProc: ChildProcess = childprocess.spawn(
+    this.renodeProc = childprocess.spawn(
       this.renodeBinPath.fsPath,
       ['--server-mode'],
       spawnOptions,
@@ -109,15 +110,30 @@ export class RenodeSetup {
     // Anything that needs to be cleaned up on exit (i.e. killing renode) goes here
     return {
       dispose: async () => {
-        if (renodeProc !== undefined) {
-          if (process.platform === 'win32') {
-            renodeProc.kill();
-          } else {
-            process.kill(-renodeProc.pid!); // Kills the whole process group that process with pid belongs to
-          }
-        }
+        this.disposeRenode();
       },
     };
+  }
+
+  async disposeRenode() {
+    if (this.renodeProc !== undefined) {
+      if (process.platform === 'win32') {
+        this.renodeProc.kill();
+      } else {
+        process.kill(-this.renodeProc.pid!); // Kills the whole process group that process with pid belongs to
+      }
+      this.renodeProc = undefined;
+    }
+  }
+
+  async settingsChange(event: vscode.ConfigurationChangeEvent) {
+    if (
+      event.affectsConfiguration('renode.customRenodePath') ||
+      event.affectsConfiguration('renode.autoStartRenode')
+    ) {
+      await this.disposeRenode();
+      await this.setup();
+    }
   }
 
   // Returns the path to the renode binary, fetches it if it does not exists
@@ -202,6 +218,7 @@ export class RenodeSetup {
     }
   }
 }
+
 async function downloadFile(from: string, to: string) {
   const resp = await fetch(from);
   const out = await fs.open(to, 'w', 0o777);
