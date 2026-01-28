@@ -21,7 +21,6 @@ export class RenodeSetup {
   readonly renodeArchivePath: vscode.Uri;
   readonly renodeUrl: string;
   private renodeBinPath: vscode.Uri;
-  private defaultGDB: string;
   private renodeProc?: ChildProcess;
 
   constructor(ctx: vscode.ExtensionContext) {
@@ -48,8 +47,6 @@ export class RenodeSetup {
       );
       this.renodeUrl = RENODE_LINUX_URL;
     }
-
-    this.defaultGDB = 'gdb-multiarch';
   }
 
   async setup(): Promise<vscode.Disposable> {
@@ -60,13 +57,10 @@ export class RenodeSetup {
     }
     // Make sure the extensions globalStorage directory is created
     await fs.mkdir(this.globalStoragePath.fsPath, { recursive: true });
-    // Find or download Renode
-    const renode = this.getRenode();
-    const defaultGDB = this.getDefaultGDB();
 
     try {
-      // Wait for dependencies to be ready
-      await Promise.all([renode, defaultGDB]);
+      // Find or download Renode
+      this.renodeBinPath = await this.getRenode();
     } catch (error) {
       if (error instanceof Error) {
         const settings_message = 'Open extension settings';
@@ -89,10 +83,6 @@ export class RenodeSetup {
       // One or more components not available, so setup can't proceed
       return { dispose: () => {} };
     }
-
-    // All requirements are now located, and already awaited
-    this.renodeBinPath = await renode;
-    this.defaultGDB = await defaultGDB;
 
     var spawnOptions: childprocess.SpawnOptionsWithoutStdio = {
       cwd: this.globalStoragePath.fsPath,
@@ -186,35 +176,6 @@ export class RenodeSetup {
         },
       );
       return renodePath;
-    }
-  }
-
-  async getDefaultGDB(): Promise<string> {
-    // Read default GDB from settings
-    const cfg = vscode.workspace.getConfiguration('renode');
-    const defaultGDBConfig = cfg?.get<string>('defaultGDB');
-    // Should be set by default
-    let defaultGDB = defaultGDBConfig ?? 'gdb-multiarch';
-    const res = spawnSync(defaultGDB, ['--version'], {});
-    if (!res.error) {
-      // Working gdb found
-      return defaultGDB;
-    } else {
-      // On some systems with very new gdb versions (e.g. Arch Linux) gdb-multiarch is now just called gdb
-      // so check if that works and update default setting in that case
-      if (defaultGDB === 'gdb-multiarch') {
-        const res = spawnSync('gdb', ['--version'], {});
-        if (!res.error) {
-          // gdb works, when gdb-multiarch did not, so update setting
-          cfg.update('defaultGDB', 'gdb', vscode.ConfigurationTarget.Global);
-          return 'gdb';
-        }
-        // Else we just throw and inform the user that gdb is missing
-      }
-      throw new Error(
-        `${defaultGDB} not found, please set settings.renode.defaultGDB to to a valid value`,
-        { cause: 'renode.defaultGDB' },
-      );
     }
   }
 }

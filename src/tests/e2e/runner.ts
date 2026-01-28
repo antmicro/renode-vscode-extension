@@ -9,7 +9,6 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { tryConnectWs } from '../../utils';
 import { tmpdir } from 'os';
 
-const gdbBin = process.env['GDB_BIN'] ?? 'gdb-multiarch';
 const renodePath = process.env['RENODE_PATH'];
 const localProxy = process.argv.includes('--localProxy');
 const localBrowser = process.argv.includes('--localBrowser');
@@ -142,9 +141,6 @@ Warning:
   The test runner currently requires Renode to be already installed on the system.
 
 Environment variables:
-  GDB_BIN
-      Path to gdb (currently unused)
-
   RENODE_PATH
       Path to Renode.
 `);

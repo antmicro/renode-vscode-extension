@@ -170,13 +170,13 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.renodeStarted = true;
     vscode.window.showInformationMessage('Renode started');
-    const gdbPath = 'gdb';
+    const gdbPath = this.getGdbPath(args.gdb);
     this.mappings = Object.entries(args.pathMappings ?? {});
     this.miDebugger = new MI2(gdbPath, ['-q', '--interpreter=mi2'], [], null);
     this.initDebugger();
     this.setValuesFormattingMode('prettyPrinters');
     this.initialRunCommand = RunCommand.NONE;
-    const wsUri = new URL(`/run/${args.gdb ?? ''}`, this.pluginCtx.sessionBase);
+    const wsUri = new URL(`/run/${gdbPath}`, this.pluginCtx.sessionBase);
 
     await this.miDebugger
       .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString(), isRemote)
@@ -287,6 +287,21 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
   override sendResponse(response: DebugProtocol.Response): void {
     super.sendResponse(response);
+  }
+
+  private getGdbPath(launchGdb?: string): string {
+    if (launchGdb) {
+      return launchGdb; // If we set gdb in launch.json choose it, if not fallthrough
+    }
+
+    let defaultGdb = vscode.workspace
+      .getConfiguration('renode')
+      .get<string>('defaultGDB');
+    if (defaultGdb) {
+      return defaultGdb; //  If we set gdb in extension settings choose it, if not fallthrough
+    }
+
+    return ''; // If we didn't find gdb path, return empty string and let Renode use its default debugger
   }
 
   private async handleUrlTerminal(
