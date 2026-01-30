@@ -231,7 +231,7 @@
     "@vscode/debugprotocol": "^1.68.0",
     "isomorphic-ws": "^5.0.0",
     "pnpm": "^10.8.0",
-    "renode-ws-api": "https://builds.renode.io/api/renode-ws-api+20260121git19e52baf2.ts.tgz"
+    "renode-ws-api": "https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz"
   },
   "prettier": {
     "tabWidth": 2,
