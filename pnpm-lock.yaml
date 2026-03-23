@@ -21,8 +21,8 @@ importers:
         specifier: ^10.8.0
         version: 10.8.0
       renode-ws-api:
-        specifier: https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz
-        version: https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz(ws@8.18.1)
+        specifier: https://builds.renode.io/api/typescript+20260323git72927373f.tgz
+        version: https://builds.renode.io/api/typescript+20260323git72927373f.tgz(ws@8.18.1)
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.10
@@ -2043,8 +2043,8 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz:
-    resolution: {tarball: https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz}
+  renode-ws-api@https://builds.renode.io/api/typescript+20260323git72927373f.tgz:
+    resolution: {tarball: https://builds.renode.io/api/typescript+20260323git72927373f.tgz}
     version: 0.0.1
 
   require-directory@2.1.1:
@@ -2117,8 +2117,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.7.3:
-    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -4800,10 +4800,10 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20260129git8d16effa2.tgz(ws@8.18.1):
+  renode-ws-api@https://builds.renode.io/api/typescript+20260323git72927373f.tgz(ws@8.18.1):
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.18.1)
-      semver: 7.7.3
+      semver: 7.7.4
       zod: 3.25.76
     transitivePeerDependencies:
       - ws
@@ -4871,7 +4871,7 @@ snapshots:
 
   semver@7.7.1: {}
 
-  semver@7.7.3: {}
+  semver@7.7.4: {}
 
   serialize-javascript@6.0.2:
     dependencies:
