@@ -109,6 +109,7 @@ async function main() {
       browserOptions: localBrowser ? ['--headless=new'] : [],
       folderPath: workdir,
       quality: 'stable',
+      commit: 'cb0c47c0cfaad0757385834bd89d410c78a856c0',
     });
   } catch (e) {
     throw e;
