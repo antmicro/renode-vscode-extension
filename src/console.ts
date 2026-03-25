@@ -46,6 +46,7 @@ class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
 
   async connect(): Promise<void> {
     this.ws = new WebSocket(this.address);
+    this.ws.binaryType = 'arraybuffer';
 
     this.ws.addEventListener('close', () => {
       this.isActive = false;
@@ -53,8 +54,15 @@ class RenodeWebSocketPseudoTerminal implements vscode.Pseudoterminal {
       this.closeEmitter.fire();
     });
 
+    const decoder = new TextDecoder('utf-8');
     this.ws.addEventListener('message', ev => {
-      this.writeEmitter.fire(ev.data.toString());
+      if (typeof ev.data === 'string') {
+        this.writeEmitter.fire(ev.data);
+      } else if (ev.data instanceof ArrayBuffer) {
+        this.writeEmitter.fire(decoder.decode(ev.data, { stream: true }));
+      } else {
+        console.error(`Invalid ws data type ${typeof ev.data}`);
+      }
     });
 
     return new Promise(resolve => {

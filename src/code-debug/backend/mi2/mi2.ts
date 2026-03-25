@@ -191,7 +191,18 @@ export class MI2 extends EventEmitter implements IBackend {
         args = args.concat([executable]);
       }
       this.socket = new WebSocket(wsUri);
-      this.socket.addEventListener('message', ev => this.stdout(ev.data));
+      this.socket.binaryType = 'arraybuffer';
+
+      const decoder = new TextDecoder('utf-8');
+      this.socket.addEventListener('message', ev => {
+        if (typeof ev.data === 'string') {
+          this.stdout(ev.data);
+        } else if (ev.data instanceof ArrayBuffer) {
+          this.stdout(decoder.decode(ev.data));
+        } else {
+          console.error(`Invalid ws data type ${typeof ev.data}`);
+        }
+      });
       this.socket.addEventListener('close', () => this.emit('quit'));
       this.socket.addEventListener('error', ev =>
         this.emit('launcherror', 'websocket error'),
