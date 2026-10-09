@@ -30,6 +30,32 @@ export function activateExtension(context: vscode.ExtensionContext) {
   context.subscriptions.push(adapterDisposable);
 
   context.subscriptions.push(
+    vscode.commands.registerCommand('renode.openUi', async () => {
+      let html: string;
+      try {
+        html = await ctx.getUiHtml();
+      } catch (e) {
+        vscode.window.showErrorMessage(
+          `Failed to get UI from Renode. Is it connected and was it built with --ui?\n${e}`,
+        );
+        return;
+      }
+
+      const panel = vscode.window.createWebviewPanel(
+        'renodeUi',
+        'Renode UI',
+        vscode.ViewColumn.Active,
+        {
+          enableScripts: true,
+          retainContextWhenHidden: true,
+        },
+      );
+
+      panel.webview.html = html;
+    }),
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand('renode.mountFolder', () => {
       vscode.workspace.updateWorkspaceFolders(0, 0, {
         name: 'Renode Outputs',

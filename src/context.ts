@@ -21,6 +21,7 @@ export class RenodePluginContext {
   public isDebugging = false;
   public onPreDisconnect: vscode.Event<RenodePluginContext>;
   public onUartOpened: vscode.Event<UartOpenedArgs>;
+  public uiHtml?: string;
 
   private currentSession?: RenodeProxySession;
   private status: vscode.StatusBarItem;
@@ -237,6 +238,15 @@ export class RenodePluginContext {
     );
   }
 
+  async getUiHtml(): Promise<string> {
+    await this.connectGuard();
+
+    this.uiHtml ??= Buffer.from(
+      await this.currentSession!.downloadUiHtml(),
+    ).toString('utf8');
+    return this.uiHtml;
+  }
+
   dispose() {
     this.currentSession?.dispose();
 
@@ -266,6 +276,7 @@ export class RenodePluginContext {
     this.preDisconnectEmitter?.fire(this);
     this.currentSession?.dispose();
     this.currentSession = undefined;
+    this.uiHtml = undefined;
 
     this.updateStatus();
   }

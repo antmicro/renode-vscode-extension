@@ -75,6 +75,10 @@
     },
     "commands": [
       {
+        "command": "renode.openUi",
+        "title": "Renode: Open UI"
+      },
+      {
         "command": "renode.sessionConnect",
         "title": "Renode: Connect to session"
       },
@@ -247,7 +251,7 @@
     "@vscode/debugadapter": "^1.68.0",
     "@vscode/debugprotocol": "^1.68.0",
     "isomorphic-ws": "^5.0.0",
-    "renode-ws-api": "https://builds.renode.io/api/typescript+20261021git339ea6069.tgz"
+    "renode-ws-api": "https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz"
   },
   "prettier": {
     "tabWidth": 2,

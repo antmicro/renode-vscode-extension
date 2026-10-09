@@ -18,8 +18,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.1)
       renode-ws-api:
-        specifier: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz
-        version: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz(ws@8.18.1)
+        specifier: https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz
+        version: https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz(ws@8.18.1)
     devDependencies:
       '@playwright/test':
         specifier: 1.64.1
@@ -2053,8 +2053,8 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20261021git339ea6069.tgz:
-    resolution: {tarball: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz}
+  renode-ws-api@https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz:
+    resolution: {integrity: sha512-GLnTn9sPbfhOXZRfh4E6Wpmri1s8DaWfky/4pXaUMMeCahLDt3VCm68SaNlIrJOJw3KeCRD1XP8dRJhdTx/qSQ==, tarball: https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz}
     version: 0.0.1
 
   require-directory@2.1.1:
@@ -4818,7 +4818,7 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20261021git339ea6069.tgz(ws@8.18.1):
+  renode-ws-api@https://builds.renode.io/api/typescript+20261029git55e6d9d9b.tgz(ws@8.18.1):
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.18.1)
       semver: 7.8.5

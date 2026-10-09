@@ -10,7 +10,7 @@ import { promisify } from 'util';
 import { spawnSync } from 'child_process';
 const finished = promisify(stream.finished);
 
-const RENODE_BUILD = 'renode-1.17.0+20261021git339ea6069';
+const RENODE_BUILD = 'renode-1.17.0+20261029git55e6d9d9b';
 const RENODE_LINUX_URL = `https://builds.renode.io/${RENODE_BUILD}.linux-portable.tar.gz`;
 const RENODE_WINDOWS_URL = `https://builds.renode.io/${RENODE_BUILD}.windows-portable.zip`;
 
