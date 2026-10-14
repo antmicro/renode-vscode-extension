@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Install pnpm
         shell: bash
@@ -22,7 +25,9 @@ jobs:
         id: get_version
         shell: bash
         run: |
-          VERSION=$(node -pe "require('./package.json').version")
+          BASE_VERSION="$(node -pe 'require("./package.json").version.split(".").slice(0, 2).join(".")')"
+          PATCH="$(git rev-list --count $(node -pe 'require("./package.json").version')...HEAD --)"
+          VERSION="${BASE_VERSION}.${PATCH}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
@@ -33,7 +38,9 @@ jobs:
 
       - name: Build extension
         shell: bash
-        run: pnpm run v:pack
+        run: |
+          pnpm version --no-git-tag-version --no-git-checks ${{ steps.get_version.outputs.version }}
+          pnpm run v:pack
 
       - name: Create Release
         if: github.ref_name == 'main'
