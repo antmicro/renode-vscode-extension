@@ -203,7 +203,8 @@
     "fmt:fix": "prettier --write .",
     "test": "pnpm run __build --tests && pnpm run test:prebuilt",
     "test:prebuilt": "node out/tests/e2e/runner.js",
-    "v:pack": "vsce pack --pre-release --no-dependencies"
+    "v:pack": "vsce pack --no-dependencies",
+    "v:publish": "vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
