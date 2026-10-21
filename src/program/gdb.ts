@@ -308,8 +308,14 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     terminal: string,
     id: number,
   ): Promise<vscode.Terminal> {
-    const name = `Terminal ${id}`;
-    const res = createRenodeWebSocketTerminal(name, terminal);
+    const path = new URL(terminal).pathname;
+    const name =
+      path === '/monitor'
+        ? 'Renode Monitor'
+        : path === '/logs'
+          ? 'Renode Logs'
+          : `Terminal ${id}`;
+    const res = createRenodeWebSocketTerminal(name, terminal, path === '/logs');
     res.show(false);
     return res;
   }

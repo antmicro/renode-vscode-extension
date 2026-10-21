@@ -111,7 +111,7 @@ function openLogsConsoleCommandHandler(pluginCtx: RenodePluginContext) {
     return;
   }
 
-  pluginCtx.createTerminal('Renode', '/logs', true);
+  pluginCtx.createTerminal('Renode Logs', '/logs', true);
 }
 
 function renodeRunning(pluginCtx: RenodePluginContext): boolean {
