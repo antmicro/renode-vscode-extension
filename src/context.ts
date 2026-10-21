@@ -33,6 +33,8 @@ export class RenodePluginContext {
 
   private disposables: vscode.Disposable[] = [];
 
+  private connecting?: Promise<void>;
+
   constructor() {
     this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
     this.uartOpenedEmitter = new vscode.EventEmitter<UartOpenedArgs>();
@@ -278,41 +280,25 @@ export class RenodePluginContext {
     response = response?.trim();
     const wsUri =
       response === undefined || response === '' ? undefined : response;
-    return this.connectCommandHandler(wsUri);
+
+    await this.connecting;
+    this.disconnectCommandHandler();
+    return this.connect(wsUri);
   }
 
-  private async connectCommandHandler(wsUri: string = this.defaultSessionBase) {
-    this.disconnectCommandHandler();
-    const cfg = vscode.workspace.getConfiguration('renode');
-    const workspace = cfg?.get<string>('workspace');
-
-    const retryNumber = 5;
-    const delayTime = 1000;
-
-    // Connect with retry
-    for (let i = 0; i < retryNumber; i++) {
-      try {
-        this.currentSession = await RenodeProxySession.tryConnect(
-          // If connection fails, error will be caught and connecting will be retried again after delay
-          wsUri,
-          workspace ?? '',
-        );
-        break; // Will reach this break if connection succeeds
-      } catch (e) {
-        await delay(delayTime);
-      }
+  private async connectCommandHandler() {
+    if (!this.socketReady) {
+      await this.connect();
     }
-
-    this.currentSession?.addEventListener('close', () => this.onClose());
-    this.updateStatus();
-    this.currentSession?.registerUartOpenedCallback(args =>
-      this.uartOpenedEmitter?.fire(args),
-    );
   }
 
   // *** Event handlers ***
 
-  private onClose() {
+  private onClose(session: RenodeProxySession) {
+    if (session !== this.currentSession) {
+      return;
+    }
+
     this.currentSession = undefined;
     this.isDebugging = false;
     this.updateStatus();
@@ -323,11 +309,50 @@ export class RenodePluginContext {
   // Execute this function to guard the function from being executed without a session connection
   private async connectGuard() {
     if (!this.socketReady) {
-      await this.connectCommandHandler();
+      await this.connect();
     }
 
     if (!this.socketReady) {
       throw new Error('Could not connect to Renode Session');
     }
+  }
+
+  private connect(wsUri: string = this.defaultSessionBase): Promise<void> {
+    this.connecting ??= this.tryConnectWithRetry(wsUri).finally(() => {
+      this.connecting = undefined;
+    });
+    return this.connecting;
+  }
+
+  private async tryConnectWithRetry(wsUri: string) {
+    const cfg = vscode.workspace.getConfiguration('renode');
+    const workspace = cfg?.get<string>('workspace');
+
+    const retryNumber = 5;
+    const delayTime = 1000;
+
+    // Connect with retry
+    let session: RenodeProxySession | undefined;
+    for (let i = 0; i < retryNumber; i++) {
+      try {
+        session = await RenodeProxySession.tryConnect(
+          // If connection fails, error will be caught and connecting will be retried again after delay
+          wsUri,
+          workspace ?? '',
+        );
+        break; // Will reach this break if connection succeeds
+      } catch (e) {
+        await delay(delayTime);
+      }
+    }
+
+    if (session !== undefined) {
+      this.currentSession = session;
+      session.addEventListener('close', () => this.onClose(session));
+      session.registerUartOpenedCallback(args =>
+        this.uartOpenedEmitter?.fire(args),
+      );
+    }
+    this.updateStatus();
   }
 }
