@@ -117,6 +117,24 @@ export class RenodeSetup {
     }
   }
 
+  async clearCachedRenode() {
+    await this.disposeRenode();
+    try {
+      await fs.rm(this.globalStoragePath.fsPath, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+      });
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Could not remove cached Renode packages: ${String(error)}`,
+      );
+      return;
+    }
+    vscode.window.showInformationMessage('Cached Renode packages removed');
+    await this.setup();
+  }
+
   async settingsChange(event: vscode.ConfigurationChangeEvent) {
     if (
       event.affectsConfiguration('renode.customRenodePath') ||

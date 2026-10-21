@@ -14,6 +14,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Logic specific to the desktop version goes here
   let setup = new RenodeSetup(context);
+  context.subscriptions.push(
+    vscode.commands.registerCommand('renode.clearCachedRenode', () =>
+      setup.clearCachedRenode(),
+    ),
+  );
   setup.setup().then(disposable => {
     context.subscriptions.push(disposable);
     context.subscriptions.push(

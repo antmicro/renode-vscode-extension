@@ -109,8 +109,20 @@
       {
         "command": "renode.openLogs",
         "title": "Renode: Open Logs"
+      },
+      {
+        "command": "renode.clearCachedRenode",
+        "title": "Renode: Clear Cached Renode Packages"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "renode.clearCachedRenode",
+          "when": "!isWeb"
+        }
+      ]
+    },
     "breakpoints": [
       {
         "language": "ada"
