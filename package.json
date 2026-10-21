@@ -216,10 +216,12 @@
     "fmt:fix": "prettier --write .",
     "test": "pnpm run __build --tests && pnpm run test:prebuilt",
     "test:prebuilt": "node out/tests/e2e/runner.js",
+    "test:ui": "playwright test -c src/tests/ui",
     "v:pack": "vsce pack --no-dependencies",
     "v:publish": "vsce publish --no-dependencies"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "~20.17.30",
     "@types/tmp": "^0.2.6",
@@ -228,7 +230,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.5.1",
+    "@vscode/test-electron": "^3.1.0",
     "@vscode/test-web": "^0.0.60",
     "@vscode/vsce": "^2.32.0",
     "dts-bundle-generator": "^9.5.1",

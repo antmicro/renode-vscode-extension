@@ -1,6 +1,3 @@
-variables:
-  RENODE_COMMIT: 'master'
-
 include:
   - project: repositories/renode-theia-ci
     ref: main

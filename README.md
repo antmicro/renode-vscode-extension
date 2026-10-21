@@ -79,3 +79,7 @@ For a working one with comments for each option, see [`examples/.vscode/launch.j
 ## Example
 
 [`examples/`](examples/README.md) has a ready to debug demo - Zephyr running on a Nucleo H753ZI.
+
+## Testing
+
+See [TEST.md](TEST.md).
