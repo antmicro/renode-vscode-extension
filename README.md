@@ -11,7 +11,7 @@ Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [
 
 ## Requirements
 
-- [Renode](https://github.com/renode/renode) (the extension can either connect to a local copy or download the latest nightly package for Windows or Linux).
+- [Renode](https://github.com/renode/renode) (the extension can either connect to a local copy or download the Renode build matching its version, for Windows or Linux).
 - GDB, with support for the architecture you are planning to debug.
 
 ## Installing the extension

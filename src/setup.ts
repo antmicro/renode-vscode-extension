@@ -10,14 +10,14 @@ import { promisify } from 'util';
 import { spawnSync } from 'child_process';
 const finished = promisify(stream.finished);
 
-const RENODE_LINUX_URL =
-  'https://builds.renode.io/renode-latest.linux-portable-dotnet.tar.gz';
-const RENODE_WINDOWS_URL =
-  'https://builds.renode.io/renode-latest.windows-portable-dotnet.zip';
+const RENODE_BUILD = 'renode-1.17.0+20261021git339ea6069';
+const RENODE_LINUX_URL = `https://builds.renode.io/${RENODE_BUILD}.linux-portable.tar.gz`;
+const RENODE_WINDOWS_URL = `https://builds.renode.io/${RENODE_BUILD}.windows-portable.zip`;
 
 export class RenodeSetup {
   // Holds platform specific paths
   readonly globalStoragePath: vscode.Uri;
+  readonly renodeDirPath: vscode.Uri;
   readonly renodeArchivePath: vscode.Uri;
   readonly renodeUrl: string;
   private renodeBinPath: vscode.Uri;
@@ -25,25 +25,26 @@ export class RenodeSetup {
 
   constructor(ctx: vscode.ExtensionContext) {
     this.globalStoragePath = ctx.globalStorageUri;
+    this.renodeDirPath = vscode.Uri.joinPath(
+      this.globalStoragePath,
+      RENODE_BUILD,
+    );
     // Platform specific paths, vscode.Uri handles converting path separators
     if (process.platform === 'win32') {
       this.renodeBinPath = vscode.Uri.joinPath(
-        this.globalStoragePath,
-        'Renode.exe',
+        this.renodeDirPath,
+        'renode.exe',
       );
       this.renodeArchivePath = vscode.Uri.joinPath(
         this.globalStoragePath,
-        'renode-latest.zip',
+        `${RENODE_BUILD}.zip`,
       );
       this.renodeUrl = RENODE_WINDOWS_URL;
     } else {
-      this.renodeBinPath = vscode.Uri.joinPath(
-        this.globalStoragePath,
-        'renode',
-      );
+      this.renodeBinPath = vscode.Uri.joinPath(this.renodeDirPath, 'renode');
       this.renodeArchivePath = vscode.Uri.joinPath(
         this.globalStoragePath,
-        'renode-portable-dotnet.tar.gz',
+        `${RENODE_BUILD}.tar.gz`,
       );
       this.renodeUrl = RENODE_LINUX_URL;
     }
@@ -85,7 +86,7 @@ export class RenodeSetup {
     }
 
     var spawnOptions: childprocess.SpawnOptionsWithoutStdio = {
-      cwd: this.globalStoragePath.fsPath,
+      cwd: vscode.Uri.joinPath(this.renodeBinPath, '..').fsPath,
     };
     if (process.platform !== 'win32') {
       spawnOptions.detached = true; // Separates spawned program into separate group
@@ -168,10 +169,11 @@ export class RenodeSetup {
           progress: vscode.Progress<any>,
           token: vscode.CancellationToken,
         ) => {
+          await fs.mkdir(this.renodeDirPath.fsPath, { recursive: true });
           spawnSync(
             'tar',
             ['--strip-components', '1', '-xf', this.renodeArchivePath.fsPath],
-            { cwd: this.globalStoragePath.fsPath, stdio: 'ignore' },
+            { cwd: this.renodeDirPath.fsPath, stdio: 'ignore' },
           );
         },
       );
