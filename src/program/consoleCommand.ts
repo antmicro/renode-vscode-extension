@@ -3,14 +3,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as vscode from 'vscode';
-import { RenodePluginContext, INITIAL_PORT } from '../context';
+import { RenodePluginContext } from '../context';
 
 export function registerConsoleCommands(
   subscriptions: any[],
   pluginCtx: RenodePluginContext,
 ) {
   pluginCtx.onUartOpened(args => {
-    pluginCtx.createTerminal(`${args.name} (${args.machineName})`, args.port);
+    pluginCtx.createUARTTerminal(args.machineName, args.name).catch(e => {
+      vscode.window.showErrorMessage(
+        `Could not open UART ${args.name} (${args.machineName}): ${e}`,
+      );
+    });
   });
 
   const uartCommand = vscode.commands.registerCommand(
@@ -26,27 +30,24 @@ export function registerConsoleCommands(
   subscriptions.push(allUartsCommand);
 
   const logsCommand = vscode.commands.registerCommand('renode.openLogs', () =>
-    openLogsConsoleCommandHandler(INITIAL_PORT, pluginCtx),
+    openLogsConsoleCommandHandler(pluginCtx),
   );
   subscriptions.push(logsCommand);
 
   const monitorCommand = vscode.commands.registerCommand(
     'renode.openMonitor',
-    () => openMonitorCommandHandler(INITIAL_PORT - 1, pluginCtx),
+    () => openMonitorCommandHandler(pluginCtx),
   );
   subscriptions.push(monitorCommand);
 }
 
-async function openMonitorCommandHandler(
-  monitorPort: number,
-  pluginCtx: RenodePluginContext,
-) {
+async function openMonitorCommandHandler(pluginCtx: RenodePluginContext) {
   if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
 
-  pluginCtx.createTerminal('Renode Monitor', monitorPort);
+  pluginCtx.createTerminal('Renode Monitor', '/monitor');
 }
 
 async function openAllUartConsolesCommandHandler(
@@ -104,16 +105,13 @@ async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
   await pluginCtx.createUARTTerminal(machineName, uartName);
 }
 
-function openLogsConsoleCommandHandler(
-  logsPort: number,
-  pluginCtx: RenodePluginContext,
-) {
+function openLogsConsoleCommandHandler(pluginCtx: RenodePluginContext) {
   if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
 
-  pluginCtx.createTerminal('Renode', logsPort, true);
+  pluginCtx.createTerminal('Renode', '/logs', true);
 }
 
 function renodeRunning(pluginCtx: RenodePluginContext): boolean {

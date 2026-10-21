@@ -18,8 +18,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.1)
       renode-ws-api:
-        specifier: https://builds.renode.io/api/typescript+20260323git72927373f.tgz
-        version: https://builds.renode.io/api/typescript+20260323git72927373f.tgz(ws@8.18.1)
+        specifier: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz
+        version: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz(ws@8.18.1)
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.10
@@ -2035,8 +2035,8 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20260323git72927373f.tgz:
-    resolution: {integrity: sha512-aoJMQLpIadqyRMQ8b6YGESb+oTjqFJoVj0AaDlNBJ1AGW3uXT21CaMM3cdb+bap/mDf6IjGDb6yMq0H4KR34TA==, tarball: https://builds.renode.io/api/typescript+20260323git72927373f.tgz}
+  renode-ws-api@https://builds.renode.io/api/typescript+20261021git339ea6069.tgz:
+    resolution: {integrity: sha512-Y2iEk9/t0S3I8uSKlTeLsxEAY3bvUIXoNXUm5voK9ZrOwGgsvJuMuW5x/NBz7ctNv5HBtoOw0+pGcxHu7uQCAA==, tarball: https://builds.renode.io/api/typescript+20261021git339ea6069.tgz}
     version: 0.0.1
 
   require-directory@2.1.1:
@@ -2109,8 +2109,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.7.4:
-    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -2554,8 +2554,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -4790,11 +4790,11 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20260323git72927373f.tgz(ws@8.18.1):
+  renode-ws-api@https://builds.renode.io/api/typescript+20261021git339ea6069.tgz(ws@8.18.1):
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.18.1)
-      semver: 7.7.4
-      zod: 3.25.76
+      semver: 7.8.5
+      zod: 4.6.7
     transitivePeerDependencies:
       - ws
 
@@ -4861,7 +4861,7 @@ snapshots:
 
   semver@7.7.1: {}
 
-  semver@7.7.4: {}
+  semver@7.8.5: {}
 
   serialize-javascript@6.0.2:
     dependencies:
@@ -5369,4 +5369,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.25.76: {}
+  zod@4.6.7: {}

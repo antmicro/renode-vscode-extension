@@ -16,9 +16,6 @@ import { delay } from './utils';
 
 const DEFAULT_URI = 'ws://127.0.0.1:21234';
 
-// NOTE: initial port is reserved for Renode logs, successive ports are used for UARTs
-export const INITIAL_PORT = 29170;
-
 export class RenodePluginContext {
   // TODO: Remove once more than one debugging session is supported.
   public isDebugging = false;
@@ -35,8 +32,6 @@ export class RenodePluginContext {
   private disconnectCommand = 'renode.sessionDisconnect';
 
   private disposables: vscode.Disposable[] = [];
-
-  private lastPort: number = INITIAL_PORT;
 
   constructor() {
     this.preDisconnectEmitter = new vscode.EventEmitter<RenodePluginContext>();
@@ -212,12 +207,12 @@ export class RenodePluginContext {
 
   createTerminal(
     name: string,
-    port: number,
+    endpoint: string,
     readonly?: boolean,
   ): vscode.Terminal {
     const term = createRenodeWebSocketTerminal(
       name,
-      `${this.sessionBase}/telnet/${port}`,
+      new URL(endpoint, this.sessionBase).toString(),
       readonly,
     );
     term.show(false);
@@ -232,16 +227,12 @@ export class RenodePluginContext {
     machine: string,
     uart: string,
   ): Promise<vscode.Terminal> {
-    // TODO: add protocol support for ws endpoint creation with uart terminal
-    this.lastPort += 1;
-    let monitorCommands = [
-      `mach set "${machine}"`,
-      `emulation CreateServerSocketTerminal ${this.lastPort} "sst-${this.lastPort}"`,
-      `sst-${this.lastPort} AttachTo ${uart}`,
-    ];
+    await this.connectGuard();
 
-    await this.execMonitor(monitorCommands);
-    return this.createTerminal(`${uart} (${machine})`, this.lastPort);
+    return this.createTerminal(
+      `${uart} (${machine})`,
+      `/uart/${encodeURIComponent(machine)}/${encodeURIComponent(uart)}`,
+    );
   }
 
   dispose() {
