@@ -1,0 +1,10 @@
+:name: UART passthrough demo
+:Nucleo H753ZI running the Zephyr uart_passthrough sample, what you type into usart3 comes out of usart2.
+
+$bin?=$ORIGIN/uart_passthrough.elf
+
+mach create "nucleo"
+machine LoadPlatformDescription @platforms/boards/nucleo_h753zi.repl
+showAnalyzer sysbus.usart3
+showAnalyzer sysbus.usart2
+sysbus LoadELF $bin

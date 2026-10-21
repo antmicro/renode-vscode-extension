@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Debugger provided by the Renode extension
+      "type": "renodegdb",
+      "request": "launch",
+      "name": "Renode demo",
+      // Binary to debug, downloaded by fetch.sh
+      "elf": "${workspaceFolder}/uart_passthrough.elf",
+      // Renode script creating the machine and loading the binary
+      "resc": "${workspaceFolder}/demo.resc",
+      "cwd": "${workspaceFolder}",
+      // GDB with support for the target architecture
+      "gdb": "gdb-multiarch",
+      // The ELF was built in /ci/zephyrproject/zephyr, fetch.sh checks out the same sources in sources/zephyr
+      "pathMappings": {
+        "/ci/zephyrproject/zephyr": "${workspaceFolder}/sources/zephyr"
+      },
+      // Optional, terminals opened when debugging starts.
+      // UARTs with `showAnalyzer` in demo.resc open on their own.
+      "terminals": [
+        "ws://127.0.0.1:21234/monitor", // Renode Monitor
+        "ws://127.0.0.1:21234/logs" // Renode logs
+      ]
+    }
+  ]
+}

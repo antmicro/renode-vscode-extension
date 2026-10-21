@@ -4,6 +4,8 @@ Copyright (c) 2026 [Antmicro](https://antmicro.com)
 
 Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [Theia](https://theia-ide.org), allowing users to easily integrate with [Renode](https://antmicro.com/platforms/renode/), an open source simulation framework for embedded systems.
 
+![Debugging the demo](assets/demo.gif)
+
 ## Features
 
 - Enables emulating and debugging projects in Renode directly from the editor.
@@ -71,3 +73,9 @@ Here is the sample configuration file you can place in `.vscode/launch.json` or 
   ]
 }
 ```
+
+For a working one with comments for each option, see [`examples/.vscode/launch.json`](examples/.vscode/launch.json).
+
+## Example
+
+[`examples/`](examples/README.md) has a ready to debug demo - Zephyr running on a Nucleo H753ZI.
