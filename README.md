@@ -2,19 +2,23 @@
 
 Copyright (c) 2026 [Antmicro](https://antmicro.com)
 
-Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [Theia](https://theia-ide.org), allowing users to easily integrate with [Renode](https://renode.io), an open source simulation framework for embedded systems.
+Renode Extensions for [Visual Studio Code](https://code.visualstudio.com/) and [Theia](https://theia-ide.org), allowing users to easily integrate with [Renode](https://antmicro.com/platforms/renode/), an open source simulation framework for embedded systems.
 
 ## Features
 
-- Allows you to run your project in Renode and debug it in your editor.
-
-- Provides web extension compatibility - lets you debug binaries even in a pure web editor (like vscode.dev).
+- Enables emulating and debugging projects in Renode directly from the editor.
+- Web extension compatibility - most features work seamlessly in pure web environments, like vscode.dev.
 
 ## Requirements
 
-You need to already have [Renode](https://github.com/renode/renode) and gdb, for architecture you're planning to debug, installed.
+- [Renode](https://github.com/renode/renode) (the extension can either connect to a local copy or download the latest nightly package for Windows or Linux).
+- GDB, with support for the architecture you are planning to debug.
 
-## Building and installation
+## Installing the extension
+
+The extension can be installed from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Antmicro.renode).
+
+## Building and manual installation
 
 To build the extension, use `pnpm`:
 
@@ -27,6 +31,19 @@ This will produce a `renode*.vsix` file you can install in your IDE.
 You can install it in the `Extension` tab, with the `Install from VSIX` option.
 
 ![Install from VSIX](img/vsix.png)
+
+## Connecting to Renode from pure web editors
+
+In pure web environments (like vscode.dev), the extension cannot automatically start Renode and needs to connect to a running instance using a WebSocket.
+
+To do that, start Renode in server mode:
+
+```sh
+renode --server-mode
+```
+
+If both Renode and the web environment are on the same machine, the extension will pick up the running server automatically.
+In other cases, the WebSocket URI can be changed in the extension's settings using `Default Session Uri`.
 
 ## Plugin configuration
 
