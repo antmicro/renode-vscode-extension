@@ -32,8 +32,6 @@ This will produce a `renode*.vsix` file you can install in your IDE.
 
 You can install it in the `Extension` tab, with the `Install from VSIX` option.
 
-![Install from VSIX](img/vsix.png)
-
 ## Connecting to Renode from pure web editors
 
 In pure web environments (like vscode.dev), the extension cannot automatically start Renode and needs to connect to a running instance using a WebSocket.
