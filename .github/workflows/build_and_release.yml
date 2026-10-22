@@ -39,7 +39,7 @@ jobs:
       - name: Build extension
         shell: bash
         run: |
-          pnpm version --no-git-tag-version --no-git-checks ${{ steps.get_version.outputs.version }}
+          pnpm version --no-git-tag-version --no-git-checks --allow-same-version ${{ steps.get_version.outputs.version }}
           pnpm run v:pack
 
       - name: Publish extension
