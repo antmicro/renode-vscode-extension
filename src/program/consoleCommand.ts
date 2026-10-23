@@ -115,5 +115,5 @@ function openLogsConsoleCommandHandler(pluginCtx: RenodePluginContext) {
 }
 
 function renodeRunning(pluginCtx: RenodePluginContext): boolean {
-  return pluginCtx.socketReady && pluginCtx.isDebugging;
+  return pluginCtx.socketReady;
 }
