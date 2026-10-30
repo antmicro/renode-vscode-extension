@@ -84,6 +84,10 @@ async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
         ignoreFocusOut: true,
         title: 'machine - Console selection',
       });
+      if (machineName === undefined) {
+        vscode.window.showWarningMessage('Renode: No machine selected');
+        return;
+      }
     } else {
       uartName = await vscode.window.showQuickPick(
         pluginCtx
@@ -95,6 +99,10 @@ async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
           title: 'UART - Console selection',
         },
       );
+      if (uartName === undefined) {
+        vscode.window.showWarningMessage('Renode: No UART selected');
+        return;
+      }
       if (uartName === parentName) {
         machineName = undefined;
         uartName = undefined;
