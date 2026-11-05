@@ -92,8 +92,6 @@ export class RenodePluginContext {
   async startRenode() {
     await this.connectGuard();
 
-    await this.currentSession!.startRenode();
-
     this.isDebugging = true;
   }
 
