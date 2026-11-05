@@ -89,7 +89,7 @@ export class RenodePluginContext {
     return this.currentSession?.socketReady ?? false;
   }
 
-  async startRenode() {
+  async startDebugging() {
     await this.connectGuard();
 
     this.isDebugging = true;

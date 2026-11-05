@@ -116,7 +116,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     let monitorCommands = args.extraMonitorCommands ?? [];
 
     // This is where connection to server happens if it wasn't established before
-    await this.pluginCtx.startRenode().catch(() => {
+    await this.pluginCtx.startDebugging().catch(() => {
       throw new Error('Renode did not start');
     });
 
