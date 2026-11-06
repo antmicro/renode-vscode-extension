@@ -33,6 +33,7 @@ export class RenodePluginContext {
   private disconnectCommand = 'renode.sessionDisconnect';
 
   private disposables: vscode.Disposable[] = [];
+  private webviews: vscode.WebviewPanel[] = [];
 
   private connecting?: Promise<void>;
 
@@ -238,6 +239,59 @@ export class RenodePluginContext {
     );
   }
 
+  async createUiWebview(
+    panelType: string,
+    machine?: string,
+    peripheral?: string,
+  ) {
+    await this.connectGuard();
+
+    let html: string;
+    try {
+      html = await this.getUiHtml();
+    } catch (e) {
+      vscode.window.showErrorMessage(
+        `Failed to get UI from Renode. Is it connected and was it built with --ui?\n${e}`,
+      );
+      return;
+    }
+
+    const panel = vscode.window.createWebviewPanel(
+      'renodeUi',
+      'Renode UI',
+      vscode.ViewColumn.Active,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+      },
+    );
+
+    this.webviews.push(panel);
+
+    const params = `
+    <script>
+      window.WEBVIEW_PARAMS = {mode: 'Widget', panelType: '${panelType}', machine: '${machine}', peripheral: '${peripheral}'};
+    </script>
+    `;
+
+    panel.webview.html = `
+      ${params}
+      ${html}
+    `;
+  }
+
+  async createMonitorWebview() {
+    await this.createUiWebview('Monitor');
+  }
+
+  async createLogsWebview() {
+    await this.createUiWebview('Renode Logs');
+  }
+
+  async createUARTWebview(machine: string, uart: string) {
+    await this.createUiWebview('UARTs', machine, uart);
+  }
+
   async getUiHtml(): Promise<string> {
     await this.connectGuard();
 
@@ -266,6 +320,8 @@ export class RenodePluginContext {
         'statusBarItem.background',
       );
       this.status.command = this.connectCommand;
+      this.webviews.forEach(v => v.dispose());
+      this.webviews = [];
     }
     this.status.show();
   }

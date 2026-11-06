@@ -19,9 +19,15 @@ export function registerConsoleCommands(
 
   const uartCommand = vscode.commands.registerCommand(
     'renode.openUartConsole',
-    () => openUartConsoleCommandHandler(pluginCtx),
+    () => openUartConsoleCommandHandler(pluginCtx, false),
   );
   subscriptions.push(uartCommand);
+
+  const uartUiCommand = vscode.commands.registerCommand(
+    'renode.openUartUi',
+    () => openUartConsoleCommandHandler(pluginCtx, true),
+  );
+  subscriptions.push(uartUiCommand);
 
   const allUartsCommand = vscode.commands.registerCommand(
     'renode.openAllUartConsoles',
@@ -30,24 +36,43 @@ export function registerConsoleCommands(
   subscriptions.push(allUartsCommand);
 
   const logsCommand = vscode.commands.registerCommand('renode.openLogs', () =>
-    openLogsConsoleCommandHandler(pluginCtx),
+    openLogsConsoleCommandHandler(pluginCtx, false),
   );
   subscriptions.push(logsCommand);
 
+  const logsUiCommand = vscode.commands.registerCommand(
+    'renode.openLogsUi',
+    () => openLogsConsoleCommandHandler(pluginCtx, true),
+  );
+  subscriptions.push(logsUiCommand);
+
   const monitorCommand = vscode.commands.registerCommand(
     'renode.openMonitor',
-    () => openMonitorCommandHandler(pluginCtx),
+    () => openMonitorCommandHandler(pluginCtx, false),
   );
   subscriptions.push(monitorCommand);
+
+  const monitorUiCommand = vscode.commands.registerCommand(
+    'renode.openMonitorUi',
+    () => openMonitorCommandHandler(pluginCtx, true),
+  );
+  subscriptions.push(monitorUiCommand);
 }
 
-async function openMonitorCommandHandler(pluginCtx: RenodePluginContext) {
+async function openMonitorCommandHandler(
+  pluginCtx: RenodePluginContext,
+  asWebview: boolean,
+) {
   if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
 
-  pluginCtx.createTerminal('Renode Monitor', '/monitor');
+  if (asWebview) {
+    await pluginCtx.createMonitorWebview();
+  } else {
+    pluginCtx.createTerminal('Renode Monitor', '/monitor');
+  }
 }
 
 async function openAllUartConsolesCommandHandler(
@@ -67,7 +92,10 @@ async function openAllUartConsolesCommandHandler(
   );
 }
 
-async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
+async function openUartConsoleCommandHandler(
+  pluginCtx: RenodePluginContext,
+  asWebview: boolean,
+) {
   if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
@@ -110,16 +138,27 @@ async function openUartConsoleCommandHandler(pluginCtx: RenodePluginContext) {
     }
   }
 
-  await pluginCtx.createUARTTerminal(machineName, uartName);
+  if (asWebview) {
+    await pluginCtx.createUARTWebview(machineName, uartName);
+  } else {
+    await pluginCtx.createUARTTerminal(machineName, uartName);
+  }
 }
 
-function openLogsConsoleCommandHandler(pluginCtx: RenodePluginContext) {
+async function openLogsConsoleCommandHandler(
+  pluginCtx: RenodePluginContext,
+  asWebview: boolean,
+) {
   if (!renodeRunning(pluginCtx)) {
     vscode.window.showErrorMessage('Renode not connected!');
     return;
   }
 
-  pluginCtx.createTerminal('Renode Logs', '/logs', true);
+  if (asWebview) {
+    await pluginCtx.createLogsWebview();
+  } else {
+    pluginCtx.createTerminal('Renode Logs', '/logs', true);
+  }
 }
 
 function renodeRunning(pluginCtx: RenodePluginContext): boolean {

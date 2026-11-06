@@ -103,8 +103,16 @@
         "title": "Renode: Open Monitor"
       },
       {
+        "command": "renode.openMonitorUi",
+        "title": "Renode: Open Monitor UI"
+      },
+      {
         "command": "renode.openUartConsole",
         "title": "Renode: Open UART console"
+      },
+      {
+        "command": "renode.openUartUi",
+        "title": "Renode: Open UART UI"
       },
       {
         "command": "renode.openAllUartConsoles",
@@ -113,6 +121,10 @@
       {
         "command": "renode.openLogs",
         "title": "Renode: Open Logs"
+      },
+      {
+        "command": "renode.openLogsUi",
+        "title": "Renode: Open Logs UI"
       },
       {
         "command": "renode.clearCachedRenode",
