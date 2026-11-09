@@ -158,7 +158,6 @@
         "configurationAttributes": {
           "launch": {
             "required": [
-              "elf",
               "cwd"
             ],
             "properties": {

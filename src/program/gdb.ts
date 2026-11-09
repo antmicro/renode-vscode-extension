@@ -31,7 +31,7 @@ export interface LaunchRequestArguments
   extends DebugProtocol.LaunchRequestArguments {
   resc?: string;
   repl?: string;
-  elf: string;
+  elf?: string;
   cwd: string;
   gdb?: string;
   pathMappings?: object;
@@ -150,12 +150,14 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       }
     }
 
-    let elf = args.elf;
-    if (isRemote) {
-      const resp = await this.pluginCtx.sendFileFromPath(args.elf);
-      elf = resp.path;
-    } else if (!path.isAbsolute(elf)) {
-      elf = path.join(args.cwd, elf);
+    if (args.elf) {
+      let elf = args.elf;
+      if (isRemote) {
+        const resp = await this.pluginCtx.sendFileFromPath(args.elf);
+        elf = resp.path;
+      } else if (!path.isAbsolute(elf)) {
+        elf = path.join(args.cwd, elf);
+      }
     }
 
     const gdbPort = randomPort();
@@ -175,6 +177,10 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       return;
     }
 
+    if (args.elf === undefined) {
+      throw new Error(`ELF was not specified for debugger`);
+    }
+
     const gdbPath = this.getGdbPath(args.gdb);
     this.mappings = Object.entries(args.pathMappings ?? {});
     this.miDebugger = new MI2(gdbPath, ['-q', '--interpreter=mi2'], [], null);
@@ -184,7 +190,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     const wsUri = new URL(`/run/${gdbPath}`, this.pluginCtx.sessionBase);
 
     await this.miDebugger
-      .connectWs(args.cwd, elf, `:${gdbPort}`, wsUri.toString(), isRemote)
+      .connectWs(args.cwd, args.elf, `:${gdbPort}`, wsUri.toString(), isRemote)
       .catch(err => {
         throw new Error(`Failed to load debugger: ${err}`);
       });
