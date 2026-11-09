@@ -161,10 +161,12 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     }
 
     const gdbPort = randomPort();
-    monitorCommands = [
-      ...monitorCommands,
-      `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
-    ];
+    if (!args.noDebug) {
+      monitorCommands = [
+        ...monitorCommands,
+        `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
+      ];
+    }
 
     await this.pluginCtx.execMonitor(monitorCommands).catch(() => {
       throw new Error('Renode did not execute initial commands');
