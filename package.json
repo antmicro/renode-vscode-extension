@@ -200,7 +200,7 @@
                   }
                 }
               },
-              "extraRenodeArgs": {
+              "extraMonitorCommands": {
                 "type": "array",
                 "items": {
                   "type": "string"
