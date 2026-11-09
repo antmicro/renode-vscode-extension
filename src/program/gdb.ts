@@ -170,6 +170,11 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.renodeStarted = true;
     vscode.window.showInformationMessage('Renode started');
+
+    if (args.noDebug) {
+      return;
+    }
+
     const gdbPath = this.getGdbPath(args.gdb);
     this.mappings = Object.entries(args.pathMappings ?? {});
     this.miDebugger = new MI2(gdbPath, ['-q', '--interpreter=mi2'], [], null);
