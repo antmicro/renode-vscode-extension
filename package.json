@@ -190,6 +190,9 @@
                     "object"
                   ],
                   "properties": {
+                    "type": {
+                      "type": "string"
+                    },
                     "name": {
                       "type": "string"
                     },
@@ -203,6 +206,25 @@
                 "type": "array",
                 "items": {
                   "type": "string"
+                }
+              },
+              "widgets": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "object"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "machine": {
+                      "type": "string"
+                    }
+                  }
                 }
               },
               "remoteSession": {

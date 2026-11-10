@@ -23,8 +23,9 @@ function randomPort(): number {
 }
 
 interface PeripheralHint {
+  type: string;
   machine?: string;
-  name: string;
+  name?: string;
 }
 
 export interface LaunchRequestArguments
@@ -355,7 +356,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       );
     }
 
-    return this.pluginCtx.createUARTTerminal(terminal.machine, terminal.name);
+    return this.pluginCtx.createUARTTerminal(terminal.machine, terminal.name!);
   }
 
   private handleTerminals(
