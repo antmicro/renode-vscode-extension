@@ -37,6 +37,7 @@ export interface LaunchRequestArguments
   gdb?: string;
   pathMappings?: object;
   terminals?: (string | PeripheralHint)[];
+  widgets?: PeripheralHint[];
   extraMonitorCommands?: string[];
   cpuCluster?: string;
   // TODO: Work on autodetection
@@ -175,6 +176,8 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     this.renodeStarted = true;
     vscode.window.showInformationMessage('Renode started');
+
+    await Promise.all(this.handleWidgets(args.widgets ?? []));
 
     if (args.noDebug) {
       return;
@@ -368,6 +371,22 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
         return this.handleUrlTerminal(terminal, i++);
       } else {
         return this.handleNamedUartTerminal(terminal);
+      }
+    });
+  }
+
+  private handleWidgets(terminals: PeripheralHint[]): Promise<void>[] {
+    return terminals.map(async terminal => {
+      switch (terminal.type) {
+        case 'Monitor':
+          return this.pluginCtx.createMonitorWebview();
+        case 'Logs':
+          return this.pluginCtx.createLogsWebview();
+        case 'UART':
+          return this.pluginCtx.createUARTWebview(
+            terminal.machine!,
+            terminal.name!,
+          );
       }
     });
   }
