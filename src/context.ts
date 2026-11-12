@@ -257,7 +257,7 @@ export class RenodePluginContext {
     const panel = vscode.window.createWebviewPanel(
       'renodeUi',
       'Renode UI',
-      vscode.ViewColumn.Active,
+      vscode.ViewColumn.Beside,
       {
         enableScripts: true,
         retainContextWhenHidden: true,
