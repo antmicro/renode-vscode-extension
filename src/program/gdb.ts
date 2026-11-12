@@ -170,6 +170,10 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
       ];
     }
 
+    if (args.noDebug) {
+      monitorCommands = [...monitorCommands, `start`];
+    }
+
     await this.pluginCtx.execMonitor(monitorCommands).catch(() => {
       throw new Error('Renode did not execute initial commands');
     });
