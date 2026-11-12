@@ -290,6 +290,22 @@ export class RenodePluginContext {
     await this.createUiWebview('UARTs', machine, uart);
   }
 
+  async createSensorsWebview(machine: string) {
+    await this.createUiWebview('Sensors', machine, undefined);
+  }
+
+  async createDisplayWebview(machine: string, display: string) {
+    await this.createUiWebview('Displays', machine, display);
+  }
+
+  async createCANWebview(canhub: string) {
+    await this.createUiWebview('CAN', undefined, canhub);
+  }
+
+  async createSPIWebview(machine: string, spi: string) {
+    await this.createUiWebview('SPI', machine, spi);
+  }
+
   async getUiHtml(): Promise<string> {
     await this.connectGuard();
 

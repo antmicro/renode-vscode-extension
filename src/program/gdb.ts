@@ -387,6 +387,20 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
             terminal.machine!,
             terminal.name!,
           );
+        case 'Sensors':
+          return this.pluginCtx.createSensorsWebview(terminal.machine!);
+        case 'Display':
+          return this.pluginCtx.createDisplayWebview(
+            terminal.machine!,
+            terminal.name!,
+          );
+        case 'CAN':
+          return this.pluginCtx.createCANWebview(terminal.name!);
+        case 'SPI':
+          return this.pluginCtx.createSPIWebview(
+            terminal.machine!,
+            terminal.name!,
+          );
       }
     });
   }
