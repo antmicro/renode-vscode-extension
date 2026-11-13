@@ -144,6 +144,8 @@ export class RenodePluginContext {
     } catch {}
 
     this.isDebugging = false;
+    this.webviews.forEach(v => v.dispose());
+    this.webviews = [];
   }
 
   async downloadZipToFs(zipUrl: string) {
