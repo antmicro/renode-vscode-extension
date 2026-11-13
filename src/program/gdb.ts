@@ -22,7 +22,7 @@ function randomPort(): number {
   return Math.floor(r);
 }
 
-interface PeripheralHint {
+interface PanelHint {
   type: string;
   machine?: string;
   name?: string;
@@ -36,8 +36,8 @@ export interface LaunchRequestArguments
   cwd: string;
   gdb?: string;
   pathMappings?: object;
-  terminals?: (string | PeripheralHint)[];
-  widgets?: PeripheralHint[];
+  terminals?: (string | PanelHint)[];
+  widgets?: PanelHint[];
   extraMonitorCommands?: string[];
   cpuCluster?: string;
   autostartEmulation?: boolean;
@@ -344,7 +344,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   }
 
   private async handleNamedUartTerminal(
-    terminal: PeripheralHint,
+    terminal: PanelHint,
   ): Promise<vscode.Terminal> {
     const machines = await this.pluginCtx.getMachines();
     if ('machine' in terminal && terminal.machine) {
@@ -369,7 +369,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
   }
 
   private handleTerminals(
-    terminals: (string | PeripheralHint)[],
+    terminals: (string | PanelHint)[],
   ): Promise<vscode.Terminal>[] {
     let i = 0;
     return terminals.map(terminal => {
@@ -381,7 +381,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     });
   }
 
-  private handleWidgets(terminals: PeripheralHint[]): Promise<void>[] {
+  private handleWidgets(terminals: PanelHint[]): Promise<void>[] {
     return terminals.map(async terminal => {
       switch (terminal.type) {
         case 'Monitor':
