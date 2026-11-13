@@ -227,6 +227,9 @@
                   }
                 }
               },
+              "autostartEmulation": {
+                "type": "boolean"
+              },
               "remoteSession": {
                 "type": "boolean"
               }

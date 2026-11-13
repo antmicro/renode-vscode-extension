@@ -40,6 +40,7 @@ export interface LaunchRequestArguments
   widgets?: PeripheralHint[];
   extraMonitorCommands?: string[];
   cpuCluster?: string;
+  autostartEmulation?: boolean;
   // TODO: Work on autodetection
   remoteSession?: boolean;
 }
@@ -112,6 +113,7 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
 
     vscode.window.showInformationMessage('Starting Renode');
     const isRemote = args.remoteSession ?? false;
+    const autostartEmulation = args.autostartEmulation ?? true;
 
     this.pluginCtx.isDebugging = true;
 
@@ -166,11 +168,11 @@ export class RenodeGdbDebugSession extends MI2DebugSession {
     if (!args.noDebug) {
       monitorCommands = [
         ...monitorCommands,
-        `machine StartGdbServer ${gdbPort} True ${JSON.stringify(args.cpuCluster ?? 'all')}`,
+        `machine StartGdbServer ${gdbPort} ${autostartEmulation} ${JSON.stringify(args.cpuCluster ?? 'all')}`,
       ];
     }
 
-    if (args.noDebug) {
+    if (args.noDebug && autostartEmulation) {
       monitorCommands = [...monitorCommands, `start`];
     }
 
