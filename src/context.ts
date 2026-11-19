@@ -258,7 +258,7 @@ export class RenodePluginContext {
 
     const panel = vscode.window.createWebviewPanel(
       'renodeUi',
-      `Renode: ${panelType} ${peripheral} ${machine}`,
+      `Renode: ${panelType}`,
       vscode.ViewColumn.Beside,
       {
         enableScripts: true,
