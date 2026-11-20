@@ -6,7 +6,6 @@ import * as vscode from 'vscode';
 import * as utils from './utils';
 import { LaunchRequestArguments, RenodeGdbDebugSession } from './program/gdb';
 import { registerConsoleCommands } from './program/consoleCommand';
-import { SensorsViewProvider } from './program/sensorsWebview';
 import { RenodePluginContext } from './context';
 
 // Common activation logic for both the web and desktop extensions
@@ -74,43 +73,6 @@ export function activateExtension(context: vscode.ExtensionContext) {
         vscode.workspace.updateWorkspaceFolders(idx, 1);
       }
     }),
-  );
-
-  const sensorProvider = new SensorsViewProvider(context, ctx);
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      SensorsViewProvider.viewType,
-      sensorProvider,
-    ),
-  );
-
-  const trackerFactory: vscode.DebugAdapterTrackerFactory = {
-    createDebugAdapterTracker(session: vscode.DebugSession) {
-      return {
-        onDidSendMessage: message => {
-          if (message.type === 'event') {
-            switch (message.event) {
-              case 'initialized':
-              case 'terminated':
-              case 'exited':
-                // Reload the sensor WebView
-                sensorProvider.loadSensorsData();
-                break;
-              default:
-                // no action
-                break;
-            }
-          }
-        },
-      };
-    },
-  };
-
-  context.subscriptions.push(
-    vscode.debug.registerDebugAdapterTrackerFactory(
-      'renodegdb',
-      trackerFactory,
-    ),
   );
 }
 
