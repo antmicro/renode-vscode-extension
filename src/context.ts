@@ -4,13 +4,7 @@
 
 import * as vscode from 'vscode';
 import { RenodeFsProvider } from './fs';
-import {
-  RenodeProxySession,
-  Sensor,
-  SensorType,
-  SensorValue,
-  UartOpenedArgs,
-} from 'renode-ws-api';
+import { RenodeProxySession, UartOpenedArgs } from 'renode-ws-api';
 import { createRenodeWebSocketTerminal } from './console';
 import { delay } from './utils';
 
@@ -111,28 +105,6 @@ export class RenodePluginContext {
     await this.connectGuard();
 
     return this.currentSession!.getMachines();
-  }
-
-  async getSensors(machine: string): Promise<Sensor[]> {
-    await this.connectGuard();
-
-    return this.currentSession!.getSensors(machine);
-  }
-
-  async getSensorValue(sensor: Sensor, type: SensorType): Promise<SensorValue> {
-    await this.connectGuard();
-
-    return this.currentSession!.getSensorValue(sensor, type);
-  }
-
-  async setSensorValue(
-    sensor: Sensor,
-    type: SensorType,
-    value: SensorValue,
-  ): Promise<void> {
-    await this.connectGuard();
-
-    return this.currentSession!.setSensorValue(sensor, type, value);
   }
 
   async stopRenode() {
