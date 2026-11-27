@@ -1,3 +1,6 @@
+variables:
+  RENODE_VERSION: 'master'
+
 include:
   - project: repositories/renode-theia-ci
     ref: main
