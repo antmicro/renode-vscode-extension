@@ -18,8 +18,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.1)
       renode-ws-api:
-        specifier: https://builds.renode.io/api/typescript+20261126git742c6d885.tgz
-        version: https://builds.renode.io/api/typescript+20261126git742c6d885.tgz(ws@8.18.1)
+        specifier: github:antmicro/renode-ws-api#6ebe12ee67269e8b6472d668fe39c0e0929b6dc8
+        version: https://codeload.github.com/antmicro/renode-ws-api/tar.gz/6ebe12ee67269e8b6472d668fe39c0e0929b6dc8(ws@8.18.1)
     devDependencies:
       '@playwright/test':
         specifier: 1.64.1
@@ -2053,8 +2053,8 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20261126git742c6d885.tgz:
-    resolution: {integrity: sha512-/9Y+daBhj4w4cbaM2VdhsAEGfrD+wMkWj1PUW2U212INNqsOtoptQNQcT9l69ezk/lfFKEdET8+LMc/TNkUK+Q==, tarball: https://builds.renode.io/api/typescript+20261126git742c6d885.tgz}
+  renode-ws-api@https://codeload.github.com/antmicro/renode-ws-api/tar.gz/6ebe12ee67269e8b6472d668fe39c0e0929b6dc8:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/antmicro/renode-ws-api/tar.gz/6ebe12ee67269e8b6472d668fe39c0e0929b6dc8}
     version: 1.11.0
 
   require-directory@2.1.1:
@@ -4818,7 +4818,7 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  renode-ws-api@https://builds.renode.io/api/typescript+20261126git742c6d885.tgz(ws@8.18.1):
+  renode-ws-api@https://codeload.github.com/antmicro/renode-ws-api/tar.gz/6ebe12ee67269e8b6472d668fe39c0e0929b6dc8(ws@8.18.1):
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.18.1)
       semver: 7.8.5

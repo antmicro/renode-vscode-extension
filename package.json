@@ -269,7 +269,7 @@
     "@vscode/debugadapter": "^1.68.0",
     "@vscode/debugprotocol": "^1.68.0",
     "isomorphic-ws": "^5.0.0",
-    "renode-ws-api": "https://builds.renode.io/api/typescript+20261126git742c6d885.tgz"
+    "renode-ws-api": "github:antmicro/renode-ws-api#6ebe12ee67269e8b6472d668fe39c0e0929b6dc8"
   },
   "prettier": {
     "tabWidth": 2,
