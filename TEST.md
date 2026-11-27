@@ -3,10 +3,8 @@
 Both suites need a Renode matching the `renode-ws-api` version pinned in `package.json`:
 
 ```
-RENODE_SHA=$(grep -o 'typescript+[0-9]*git[0-9a-f]*' package.json | sed 's/.*git//')
-RENODE_VERSION=$(curl -fsSL "https://raw.githubusercontent.com/renode/renode/$RENODE_SHA/tools/version")
 mkdir -p renode
-curl -fL "https://builds.renode.io/sha/renode-$RENODE_VERSION+git$RENODE_SHA.linux-portable.tar.gz" | tar -xz --strip-components=1 -C renode
+curl -fL "https://builds.renode.io/renode-latest.linux-portable.tar.gz" | tar -xz --strip-components=1 -C renode
 export RENODE_PATH=$PWD/renode/renode
 ```
 
